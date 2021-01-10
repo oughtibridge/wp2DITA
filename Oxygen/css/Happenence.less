@@ -1,0 +1,585 @@
+@charset "utf-8";
+
+/*  Nicholas' customisation for Data Dictionary */
+/* Declare colours and charactaristics */
+
+
+/* Happenence colours */
+
+@HappenenceMain: #212121;
+@HappenenceLinks: #4f7098;
+@HappenenceLinkHover: #4f7098;
+
+@HappenenceFontSize:12px;
+@HappenenceLineSpacing: 1.5em;
+@HappenenceCaptionSize: calc(@HappenenceFontSize * 2 / 3);
+
+@HappenenceCaptionColor: @HappenenceMain;
+@HappenenceQuote:#606060;
+@HappenenceAttr: #bbb;
+@HappenenceBackground:white;
+/* 
+ * Logo position - left hand side
+ * 15px margin all sides (half height of 30px)
+ */
+@logo-border: 15px;
+
+/* 
+ * Breadcrumbs font-size 16px line height 24px
+ */
+  
+ @Breadcrumb-font-size: 16px;
+ @Breadcrumb-lineheight: 24px;
+ 
+
+/*  Fonts */
+@font-family: 'Fredericka the Great', cursive;
+@BodyFont: Lato,Helvetica,Arial,Sans-serif;
+@TitleFont: 'Fredericka the Great';
+
+@font-face: {
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    src:url(lato-regular.ttf);
+};
+@font-face: {
+    font-family: Lato;
+    font-style: normal;
+    font-weight:bold;
+    src:url(lato-bold.ttf);
+};
+@font-face: {
+    font-family: 'Fredericka the Great';
+    font-style: normal;
+    font-weight: 400;
+    src:url(FrederickatheGreat-Regular.ttf);
+};
+
+@font-face: {
+    font-family: 'Fredericka the Great';
+    font-style: normal;
+    font-weight: 700;
+    src:url(FrederickatheGreat-Regular.ttf);
+};
+body {
+  background: @HappenenceBackground;
+  font-family: @BodyFont;
+  font-size:@HappenenceFontSize;
+  font-weight:400;
+  line-height: @HappenenceLineSpacing;
+}
+
+h2, h2.sectiontitle {
+  font-size: @HappenenceFontSize;
+  font-weight: bold;
+    line-height: @HappenenceLineSpacing;
+    padding-top:1em;
+}
+
+/* Tiles */
+/* Page colours */
+/* Main Header Bar */
+/* Search Bar */
+/* Breadcrumbs */
+
+/*  Fix BR tags converted to span */
+span.html-br {
+/*    white-space:pre;*/
+    display:block;
+}
+
+/*  Hide figure numbers / labels */
+.fig--title-label {
+    display:none;
+}
+
+figcaption {
+    font-size:@HappenenceCaptionSize;
+    line-height:@HappenenceLineSpacing;
+    text-align:center;
+}
+
+/*  Blockquote and citation */
+blockquote {
+    text-align:center;
+    margin: 0,0,32px, 32px;
+    color:@HappenenceQuote;
+}
+blockquote::before {
+    content: "\201C";
+    font-size: 80px;
+    text-align: left;    
+    line-height: 0px;
+     font-style: normal;
+     position: absolute;
+    left: -3px;
+
+}
+
+blockquote::after {
+    content: "\201D";
+    font-size: 80px;
+    text-align: right;    
+   line-height: 0;
+    font-style: normal;
+    position: absolute;
+    right: -3px;
+}
+cite     {
+    color: @HappenenceAttr;
+}
+
+
+/* Image alignment styles */
+.alignright{
+    float:right;
+    padding: 1.5em 1.5em 1.5em 1.5em;
+    max-width: 20em;
+}
+.alignleft{
+    float:left;
+    padding: 1.5em 1.5em 1.5em 1.5em;
+    max-width: 20em;
+}
+.wp-block-image{
+    text-align:center;
+}
+/*  Fonts */
+
+
+
+/*  Set the default colour for links */
+a {
+    color: @HappenenceLinks;
+    text-decoration: none;
+}
+a:hover {
+    color: @HappenenceLinkHover !important;
+    }
+
+
+.banner {
+    text-align:center;
+    font-size:large;
+    color:HappenenceBackground;
+}
+
+
+.wh_right_tools, .wh_print_link {
+padding-left:20px;    
+}
+
+.permalink {
+    opacity:0.9;
+}
+
+/* Bootstrap override */
+.bg-info {
+    background-color:@HappenenceBackground;
+
+}
+ 
+.shortdesc {
+     font-size:large;
+    border-radius: 3px;
+    padding: 1em 1em 1em 1em;
+} 
+ 
+/*  Oxygen styles */
+
+
+/* Title and logo bar
+ * 
+ */
+.wh_header {
+  padding:0em;
+}
+
+/* Webhelp mobile burger menu 
+ * 
+ */
+
+.wh_toggle_button {
+    color: HappenenceBackground;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles
+ *  
+ */
+.wh_publication_title {
+  color: @HappenenceMain;
+  font-family: @TitleFont;
+  text-transform: none;
+  font-size: 28px;
+}
+.wh_publication_title > a {
+  font-size: 1.5em;
+  text-decoration: underline;
+  color: @HappenenceMain;
+  margin: 0em;
+}
+.wh_publication_title > a:hover {
+    color: @HappenenceMain;
+}
+
+
+.wh_logo img {
+  width: 73px;
+    height: 30px;
+    margin: 30px;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Menu
+ *  
+ */
+.wh_top_menu {
+  font-size: 1.1em;
+  margin: 0.4em 0;
+}
+.wh_top_menu > a {
+}
+.wh_top_menu > a:hover {
+}
+/* The submenus */
+.wh_top_menu ul ul {
+  color: HappenenceBackground;
+}
+.wh_top_menu ul ul > a {
+}
+.wh_top_menu ul li a {
+  text-decoration: underline;
+}
+.wh_top_menu ul li a:hover {
+
+}
+.wh_top_menu ul ul li a:hover {
+
+}
+.wh_top_menu ul ul li {
+
+}
+.wh_top_menu ul ul li a {
+
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Link to the index.
+ * 
+ */
+.wh_indexterms_link a span {
+  display: none;
+}
+@media only screen and (max-width: 767px) {
+  .wh_indexterms_link a:before {
+    bottom: 0;
+  }
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumb
+ *  
+ */
+.wh_breadcrumb ol {
+
+  font-weight:bold;
+}
+.wh_breadcrumb ol a {
+
+}
+.wh_breadcrumb ol .active {
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tools and navigation
+ * 
+ */
+.wh_tools {
+  margin: 1em 0 2em;
+}
+.wh_print_link button,
+.webhelp_expand_collapse_sections,
+.wh_hide_highlight,
+.wh_navigation_links a,
+.wh_navigation_links a:hover,
+.wh_navigation_links a:active,
+.wh_navigation_links a:visited,
+.wh_print_link a:before,
+.wh_navigation_links a:before,
+.wh_navigation_links a:hover:before,
+.wh_navigation_links a:active:before,
+.wh_navigation_links a:visited:before {
+   text-decoration: underline;
+}
+
+/* Introductory Text Before ToC or Tiles */
+.before_toc_or_tiles {
+ 
+    padding: 2em;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ * 
+ */
+.wh_tile {
+  border-radius: 0em;
+  border-style: solid;
+  border-width: 8px;
+}
+.wh_tile_shortdesc {
+  margin-top: 0.5em;
+  font-family: @BodyFont;
+  text-align: left;
+}
+.wh_tile_title {
+  font-family: @BodyFont;
+  text-align: left;
+  font-size: 1.1em;
+  text-decoration: none;
+  font-weight: bold;
+}
+.wh_tile_title a {
+}
+.wh_tile_text:after {
+  background: linear-gradient(to bottom, rgba(238, 238, 238, 0), #eeeeee 50%);
+}
+@media only screen and (max-width: 767px) {
+  .wh_tile > div {
+    height: auto;
+  }
+}
+/* 
+You can style some of the tiles in a special way. 
+Example:
+.wh_tiles *[data-id='getting_started']{
+    background-color:gray;
+}
+*/
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search area
+ * 
+ */
+.wh_search_input {
+  color: HappenenceBackground;
+  margin: 0 0;
+  padding: 0.4em;
+}
+.wh_welcome:not(:empty) {
+  font-size: 1em;
+  text-align: center;
+  margin: 0 auto;
+  padding: 0 0 0.5em 0;
+  text-shadow: none;
+  color: HappenenceBackground;
+}
+.wh_search_textfield {
+  background-color: HappenenceBackground;
+  border-radius: 0;
+  padding: 0 0.5em;
+  font-size: 1.2em;
+  line-height: 2em;
+  height: auto;
+}
+.wh_search_textfield:focus {
+}
+.wh_search_button {
+  border-radius: 0 0 0 0;
+  padding: 0.5em 1em;
+}
+/* Search autocomplete */
+.ui-menu-item {
+  font-size: 1.4em;
+}
+.ui-menu-item .ui-state-active {
+  background-color: #346ec5;
+}
+
+/*  Nicholas: burger menu toggler */
+.custom-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+   
+}
+
+.custom-toggler {
+}
+
+.navbar-dark .navbar-toggler {
+}
+
+/* Search relative path */
+.searchresult li .relativePath a {
+  color: #006621;
+}
+/* Search autocomplete icons */
+.search-autocomplete-proposal-type-history a,
+.search-autocomplete-proposal-type-history a:hover,
+.search-autocomplete-proposal-type-history a:visited,
+.search-autocomplete-proposal-type-history a:active {
+  text-decoration: none;
+  color: inherit;
+  font-size: 0.8em;
+}
+.ui-state-active .search-autocomplete-proposal-type-history a,
+.ui-state-active .search-autocomplete-proposal-type-history a:hover,
+.ui-state-active .search-autocomplete-proposal-type-history a:visited,
+.ui-state-active .search-autocomplete-proposal-type-history a:active {
+  color: #fff;
+}
+/* Active search page */
+#wh-search-pagination > ul > li.active > a {
+  background-color: #330072;
+}
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+  border-color: #346ec5 !important;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication TOC
+ * 
+ */
+.wh_publication_toc {
+  border-radius: 3px;
+  border-width: thin;
+  padding: 1.5em 2em;
+  line-height: 2em;
+}
+.wh_publication_toc .active > .topicref a {
+   font-weight:bold;
+}
+.wh_publication_toc span,
+.wh_publication_toc a,
+.wh_publication_toc a:visited,
+.wh_publication_toc a:hover {
+}
+.wh_publication_toc a:hover {
+  text-decoration: underline;
+}
+.topictitle3 {
+  font-weight: 400;
+}
+@media only screen and (max-width: 767px) {
+  .wh_publication_toc {
+    border-radius: 0;
+    padding: 1em 0.5em;
+    margin-top: 10px;
+  }
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Footer
+ * 
+ */
+.wh_footer {
+  text-align: left;
+  padding: 0.5em;
+  clear: both;
+  width: 100%;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Topic content
+ * 
+ */
+.wh_topic_content,
+.wh_content_area {
+  line-height: @HappenenceLineSpacing;
+}
+.wh_related_links,
+.wh_child_links,
+.wh_topic_content .related-links {
+  padding: 1.5em;
+  margin-top: 1.5em;
+}
+.related-links a,
+.related-links a:visited {
+  padding-bottom:0.3em;
+  display: inline-block;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search results.
+ * 
+ */
+.searchresult {
+  list-style: none;
+}
+.searchresult li a {
+}
+.searchresult .shortdesclink {
+  margin: 0.3em 0.5em 0 0;
+}
+.wh_search_expression {
+  font-weight: bold;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Index terms.
+ * 
+ */
+.wh_index_terms span.wh_first_letter {
+}
+.wh_index_terms #indexList {
+  padding: 0;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tree TOC for the main page.
+ * 
+ */
+/* 
+ * 
+ * Additional section styles
+ * 
+ */
+section.section {
+  border: none;
+padding-top:1em;
+background-color: inherit;
+}
+
+span.wh_expand_btn {
+  left: 0.7em;
+  border: none;
+ font-weight:800;
+}
+/* 
+ * 
+ * Additional table styles 
+ * 
+ */
+.table {
+  margin-left: 0;
+}
+.table .thead-light {
+  background-color: #003087 !important;
+  color: HappenenceBackground;
+}
+.table .thead-light th {
+  background-color: #003087 !important;
+  color: HappenenceBackground;
+}
+

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.oxygenxml.com/ns/report">
+<incident>
+<engine>DITA-OT</engine>
+<severity>fatal</severity>
+<description>Transformation failed. C:\OT\oxygen-publishing-engine-3.x\plugins\com.oxygenxml.pdf.css\build.xml:325: Unable to create javax script engine for javascript</description>
+<systemID>C:\GIT\wp2DITA\out\location_chile.ditamap</systemID>
+<operationDescription>
+<scenario>DITA Map PDF - based on HTML5 &amp; CSS - Copy</scenario>
+<inputFile>C:\GIT\wp2DITA\out\location_chile.ditamap</inputFile>
+</operationDescription>
+</incident>
+<incident>
+<engine>DITA-OT</engine>
+<severity>info</severity>
+<description>[PDF] There is no preview image specified in the publishing template descriptor file.</description>
+<systemID>C:\GIT\wp2DITA\out\location_chile.ditamap</systemID>
+<operationDescription>
+<scenario>DITA Map PDF - based on HTML5 &amp; CSS - Copy</scenario>
+<inputFile>C:\GIT\wp2DITA\out\location_chile.ditamap</inputFile>
+</operationDescription>
+</incident>
+<incident>
+<engine>DITA-OT</engine>
+<severity>error</severity>
+<description>The following error occurred while executing this line:</description>
+<systemID>C:\OT\oxygen-publishing-engine-3.x\plugins\org.dita.base\build.xml</systemID>
+<operationDescription>
+<scenario>DITA Map PDF - based on HTML5 &amp; CSS - Copy</scenario>
+<inputFile>C:\GIT\wp2DITA\out\location_chile.ditamap</inputFile>
+</operationDescription>
+<location>
+<start>
+<line>29</line>
+<column>0</column>
+</start>
+</location>
+</incident>
+<incident>
+<engine>DITA-OT</engine>
+<severity>error</severity>
+<description>Unable to create javax script engine for javascript</description>
+<systemID>C:\OT\oxygen-publishing-engine-3.x\plugins\com.oxygenxml.pdf.css\build.xml</systemID>
+<operationDescription>
+<scenario>DITA Map PDF - based on HTML5 &amp; CSS - Copy</scenario>
+<inputFile>C:\GIT\wp2DITA\out\location_chile.ditamap</inputFile>
+</operationDescription>
+<location>
+<start>
+<line>325</line>
+<column>0</column>
+</start>
+</location>
+</incident>
+</report>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<publishing-template>
+    <name>Happenence</name>
+    <description></description>
+    <author>
+        <name>Nicholas Oughtibridge</name>
+        <email>nicholas@oughtibridge.net</email>
+        <organization>Oughtibridge</organization>
+     </author>
+    <webhelp>
+        <preview-image file="NHSDD.png"/>
+        <html-page-layout-files>
+            <page-layout-file page="search" file="page-templates/wt_search.html"/>
+            <page-layout-file page="topic" file="page-templates/wt_topic.html"/>
+            <page-layout-file page="index-terms" file="page-templates/wt_terms.html"/>
+            <page-layout-file page="main" file="page-templates/wt_index.html"/>
+        </html-page-layout-files>
+        <parameters>
+            <parameter name="webhelp.show.main.page.tiles" value="no"/>
+            <parameter name="webhelp.show.main.page.toc" value="yes"/>
+            <parameter name="webhelp.show.child.links" value="yes"/>
+            <parameter name="webhelp.show.related.links" value="yes"/>
+            <parameter name="webhelp.top.menu.depth" value="1"/>
+            <parameter name="args.figurelink.style" value="TITLE"/>
+            <parameter name="figure.title.placement" value="bottom"/>
+            <parameter name="args.tablelink.style" value="TITLE"/>
+            <parameter name="webhelp.fragment.before.toc_or_tiles" value="page-templates/before_toc_or_tiles.xml" type="filePath"/>
+            <parameter name="webhelp.fragment.welcome" value="page-templates/welcome.xml" type="filePath"/>
+            <parameter name="webhelp.fragment.header" value="page-templates/header.xml" type="filePath"/>
+            <parameter name="webhelp.fragment.footer" value="page-templates/footer.xml" type="filePath"/>
+          <!--  <parameter name="webhelp.fragment.head" value="page-templates/Analytics.xml" type="filePath"/>
+-->        </parameters>
+        <resources>
+            <css file="css/happenence.css"/>
+            <logo file="resources/images/NHS-Logo.svg" target-url="https://www.nhs.uk" alt="National Health Service"/>
+            <favicon file="resources/images/favicon.ico"/>
+            <fileset>
+                <include name="css/*.css"/>
+                <include name="*.ttf"/>
+                <include name="resources/images/*"/>
+                <include name="resources/**/*"/>
+                <exclude name="resources/**/*.svn"/>
+                <exclude name="resources/**/*.git"/>
+            </fileset>
+        </resources>
+        <online-preview-url>https://beta.datadictionary.nhs.uk</online-preview-url>
+        <tags>
+            <tag type="layout">tiles</tag>
+            <tag type="color">pale</tag>
+            <tag type="color">light</tag>
+            <tag type="other">Happenence</tag>
+        </tags>
+    </webhelp>
+    <pdf>
+        <resources>
+            <css file="css/happenence.css"/>
+            <css file="css/happenence-print.css"/>
+        </resources>
+    </pdf>
+</publishing-template>

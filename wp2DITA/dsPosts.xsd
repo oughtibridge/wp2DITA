@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="PostsDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="PostsDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="PostsDataSet" msprop:Generator_UserDSName="PostsDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Posts" msprop:Generator_TableClassName="PostsDataTable" msprop:Generator_TableVarName="tablePosts" msprop:Generator_TablePropName="Posts" msprop:Generator_RowDeletingName="PostsRowDeleting" msprop:Generator_RowChangingName="PostsRowChanging" msprop:Generator_RowEvHandlerName="PostsRowChangeEventHandler" msprop:Generator_RowDeletedName="PostsRowDeleted" msprop:Generator_UserTableName="Posts" msprop:Generator_RowChangedName="PostsRowChanged" msprop:Generator_RowEvArgName="PostsRowChangeEvent" msprop:Generator_RowClassName="PostsRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ID" msprop:Generator_ColumnVarNameInTable="columnID" msprop:Generator_ColumnPropNameInRow="ID" msprop:Generator_ColumnPropNameInTable="IDColumn" msprop:Generator_UserColumnName="ID" type="xs:unsignedLong" minOccurs="0" />
+              <xs:element name="post_name" msprop:Generator_ColumnVarNameInTable="columnpost_name" msprop:Generator_ColumnPropNameInRow="post_name" msprop:Generator_ColumnPropNameInTable="post_nameColumn" msprop:Generator_UserColumnName="post_name" type="xs:string" minOccurs="0" />
+              <xs:element name="post_date" msprop:Generator_ColumnVarNameInTable="columnpost_date" msprop:Generator_ColumnPropNameInRow="post_date" msprop:Generator_ColumnPropNameInTable="post_dateColumn" msprop:Generator_UserColumnName="post_date" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="post_title" msprop:Generator_ColumnVarNameInTable="columnpost_title" msprop:Generator_ColumnPropNameInRow="post_title" msprop:Generator_ColumnPropNameInTable="post_titleColumn" msprop:Generator_UserColumnName="post_title" type="xs:string" minOccurs="0" />
+              <xs:element name="post_content" msprop:Generator_ColumnVarNameInTable="columnpost_content" msprop:Generator_ColumnPropNameInRow="post_content" msprop:Generator_ColumnPropNameInTable="post_contentColumn" msprop:Generator_UserColumnName="post_content" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1">
+      <xs:selector xpath=".//Posts" />
+      <xs:field xpath="ID" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

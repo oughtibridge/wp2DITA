@@ -1,0 +1,134 @@
+@charset "utf-8";
+/*  Fonts */
+/*  None defined for print */
+/* Front page Image Filename */
+/* Happenence colours */
+/* 
+ * Logo position - left hand side
+ * 15px margin all sides (half height of 30px)
+ */
+/* 
+ * Breadcrumbs font-size 16px line height 24px
+ */
+/*  Body style in two columns */
+article {
+  page: two-columns-page;
+  widows: 4;
+  orphans: 4;
+}
+.body {
+  page: two-columns-page;
+}
+h1.title {
+  page: two-columns-page;
+  column-span: all;
+  padding-bottom: 2em;
+  line-height: 1.5em;
+}
+ol,
+li {
+  page-break-inside: avoid;
+}
+section.section {
+  page-break-inside: avoid;
+}
+/*  Avoid page break in a figure and caption*/
+figure.fig {
+  page-break-inside: avoid;
+}
+blockquote::before {
+  content: "";
+  font-size: 0.1px;
+  text-align: left;
+  line-height: 0px;
+  font-style: normal;
+  position: absolute;
+  left: -3px;
+}
+blockquote::after {
+  content: "";
+  font-size: .01px;
+  text-align: right;
+  line-height: 0;
+  font-style: normal;
+  position: absolute;
+  right: -3px;
+}
+/* Clear the padding for a section */
+section.section {
+  border: none;
+  padding: 0em 0em 0em 0em;
+  background-color: inherit;
+}
+/*  override the floats on images */
+/*  since PDF Chemistry doesn't support them */
+.alignleft,
+.alignright {
+  float: none;
+  text-align: center;
+}
+/*  Fonts */
+body {
+  background: transparent;
+}
+@page {
+  size: A4;
+  margin: 2cm;
+}
+@page :left {
+  margin-right: 1cm;
+  
+  @bottom-left {
+    content: "Page: " counter(page) " of " counter(pages);
+  }
+}
+@page :right {
+  margin-left: 1cm;
+  
+  @bottom-right {
+    content: "Page: " counter(page) " of " counter(pages);
+  }
+}
+@page two-columns-page {
+  column-count: 2;
+  column-gap: 1cm;
+}
+@page front-page {
+  margin-top: 75mm;
+  margin-left: 15mm;
+  background-color: transparent;
+  
+  /*    background-image: url(@FrontpageImage);
+    background-position:0% 66%; /\* The first is the alignement on the X axis, the second on the Y axis.*\/
+    background-repeat:no-repeat; */
+  @bottom-left {
+    content: "";
+  }
+}
+*[class~="front-page/front-page-title"] {
+  margin-top: 75mm;
+  font-size: 96px;
+  color: #212121;
+  font-family: 'Fredericka the Great';
+  background-color: transparent;
+  text-align: center;
+}
+/* Remove the "chapter" prefix */
+*[class~="map/topicmeta"] > *[class~="topic/navtitle"]:before {
+  display: none !important;
+}
+*[class~="topic/topic"][is-chapter]:not([is-part]) > *[class~="topic/title"]:before {
+  display: none !important;
+  /*   content: counter(chapter) ". " !important;
+*/
+}
+/*  Happenence force two-column */
+*[class~="topic/topic"][is-chapter] {
+  -oxy-page-group: start;
+  page: two-columns-page;
+}
+booktitle:after {
+  content: oxy_xpath("current-date()");
+  color: gray;
+  display: block;
+}

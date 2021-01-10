@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="template">
+    
+    <title>template</title>
+    <prolog>
+        <author>Catherine Oughtibridge</author>
+        <source>https://happenence.co.uk</source>
+        <publisher>Happenence Ltd</publisher>
+        <copyright>
+            <copyryear year="${copyyear}"/>
+            <copyrholder>Happenence Ltd</copyrholder>
+        </copyright>
+        <critdates>
+            <created date="${postdate}"/>
+        </critdates>
+    </prolog>
+    <body>
+        <p></p>
+    </body>
+</topic>

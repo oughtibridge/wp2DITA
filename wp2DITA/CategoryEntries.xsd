@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="CategoryEntries" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="CategoryEntries" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="_CategoryEntries" msprop:Generator_UserDSName="CategoryEntries">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="CategoryEntries" msprop:Generator_TableClassName="CategoryEntriesDataTable" msprop:Generator_TableVarName="tableCategoryEntries" msprop:Generator_TablePropName="CategoryEntries" msprop:Generator_RowDeletingName="CategoryEntriesRowDeleting" msprop:Generator_RowChangingName="CategoryEntriesRowChanging" msprop:Generator_RowEvHandlerName="CategoryEntriesRowChangeEventHandler" msprop:Generator_RowDeletedName="CategoryEntriesRowDeleted" msprop:Generator_UserTableName="CategoryEntries" msprop:Generator_RowChangedName="CategoryEntriesRowChanged" msprop:Generator_RowEvArgName="CategoryEntriesRowChangeEvent" msprop:Generator_RowClassName="CategoryEntriesRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="slug" msprop:Generator_ColumnVarNameInTable="columnslug" msprop:Generator_ColumnPropNameInRow="slug" msprop:Generator_ColumnPropNameInTable="slugColumn" msprop:Generator_UserColumnName="slug" type="xs:string" minOccurs="0" />
+              <xs:element name="taxonomy" msprop:Generator_ColumnVarNameInTable="columntaxonomy" msprop:Generator_ColumnPropNameInRow="taxonomy" msprop:Generator_ColumnPropNameInTable="taxonomyColumn" msprop:Generator_UserColumnName="taxonomy" type="xs:string" minOccurs="0" />
+              <xs:element name="post_name" msprop:Generator_ColumnVarNameInTable="columnpost_name" msprop:Generator_ColumnPropNameInRow="post_name" msprop:Generator_ColumnPropNameInTable="post_nameColumn" msprop:Generator_UserColumnName="post_name" type="xs:string" minOccurs="0" />
+              <xs:element name="ID" msprop:Generator_ColumnVarNameInTable="columnID" msprop:Generator_ColumnPropNameInRow="ID" msprop:Generator_ColumnPropNameInTable="IDColumn" msprop:Generator_UserColumnName="ID" type="xs:unsignedLong" minOccurs="0" />
+              <xs:element name="name" msprop:Generator_ColumnVarNameInTable="columnname" msprop:Generator_ColumnPropNameInRow="name" msprop:Generator_ColumnPropNameInTable="nameColumn" msprop:Generator_UserColumnName="name" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
