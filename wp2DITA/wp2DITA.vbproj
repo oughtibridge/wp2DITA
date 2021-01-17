@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>wp2DITA</RootNamespace>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>56cd0e4f-5eb5-403e-bd03-98345abc0350</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.0" />
     <PackageReference Include="MySql.Data" Version="8.0.22" />
   </ItemGroup>
 

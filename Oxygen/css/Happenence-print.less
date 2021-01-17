@@ -3,7 +3,7 @@
 /*  Fonts */
 /*  None defined for print */
 /* Front page Image Filename */
-@FrontpageImage: "resources/images/Abstract-186165341-MED.jpg";
+@FrontpageImage: "";
 
 
 /* Happenence colours */
@@ -18,6 +18,12 @@
 @HappenenceBackground:white;
 
 @HappenenceMainTitleSize: 96px;
+@HappenenceAltTitleSize: 24px;
+
+/*  Fonts */
+@BodyFont: Lato,Helvetica,Arial,Sans-serif;
+@TitleFont: 'Fredericka the Great';
+
 /* 
  * Logo position - left hand side
  * 15px margin all sides (half height of 30px)
@@ -33,16 +39,19 @@
  
 
 /*  Body style in two columns */
-article {
+article is-chapter {
           page: two-columns-page;
           widows:4;
           orphans:4;
-}
-.body {
-      page: two-columns-page;
+          column-fill:auto;
 }
 
-h1.title {
+.body is-chapter{
+      page: two-columns-page;
+      column-fill:auto;
+}
+
+h1.title  is-chapter {
     page: two-columns-page;
     column-span: all;
     padding-bottom:2em;
@@ -95,9 +104,6 @@ section.section {
     text-align: center;
 }
 
-/*  Fonts */
-@BodyFont: Lato,Helvetica,Arial,Sans-serif;
-@TitleFont: 'Fredericka the Great';
 
 
 body {
@@ -105,6 +111,12 @@ body {
     @font-family:Lato;
 }
 
+*[class ~= "indexentry/indexentry"]{
+    color:red;
+    font-size:12px;
+    height:15px;
+}
+    
 @page {
     size: A4;
     margin: 2cm;
@@ -113,14 +125,14 @@ body {
 @page :left {
     margin-right: 1cm;
     @bottom-left {
-        content: "Page: " counter(page) " of " counter(pages);
+        content: "Page: " counter(page) ;
     }
 }
 
 @page :right {
     margin-left: 1cm;
     @bottom-right {
-        content: "Page: " counter(page) " of " counter(pages);
+        content: "Page: " counter(page) ;
     }
 }
 
@@ -153,6 +165,22 @@ background-color:transparent;
   text-align:center;
   
 }
+.booktitlealt {
+     margin-top: 25mm;  
+  font-size: @HappenenceAltTitleSize;
+  color: @HappenenceMain;
+  
+
+  font-family:@BodyFont;
+  background-color:transparent;
+  text-align:center;
+}
+
+*[class ~= "map/map"] > *[class ~= "topic/topic"]:not([is-chapter]) {
+    page: matter-page!important;
+    page-break-before: always;
+}
+
 
 /* Remove the "chapter" prefix */
 *[class ~= "map/topicmeta"] > *[class ~= "topic/navtitle"]:before {

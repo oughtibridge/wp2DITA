@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "bookmap.dtd">
+<bookmap>
+    <booktitle>
+        <mainbooktitle></mainbooktitle>
+        <booktitlealt></booktitlealt>
+    </booktitle>
+    <frontmatter>
+        <topicref href="copyright-posts-photos.dita"/>
+        <booklists>
+            <toc/>
+        </booklists>
+    </frontmatter>
+    <chapter href="location_chile.ditamap" format="ditamap"/>
+    <backmatter>
+        <booklists>
+            <indexlist/>
+        </booklists>
+    </backmatter>
+</bookmap>

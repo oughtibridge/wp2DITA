@@ -127,7 +127,7 @@ ORDER BY wp_term_taxonomy.taxonomy, wp_terms.name, wp_posts.post_date</value>
     <comment>SQL to load hierarchies</comment>
   </data>
   <data name="sqlPosts" xml:space="preserve">
-    <value>SELECT ID, post_name, post_date, post_title, post_content FROM wp_posts WHERE post_author=1 and post_type='post' and post_status='publish'</value>
+    <value>SELECT ID, post_name, post_date, post_title, post_content FROM wp_posts WHERE post_author=1 and post_status='publish'</value>
     <comment>SQL to load all the posts</comment>
   </data>
   <data name="sqlTaxomony" xml:space="preserve">
@@ -141,16 +141,38 @@ ORDER BY child_term_taxonomy.taxonomy, wp_terms.name</value>
   </data>
   <data name="Syntax" xml:space="preserve">
     <value>Syntax:
-wp2dita [list] [generate] [parameter=value]
+wp2dita [list] [generate] [help] ([parameter=value])
+list - provides the list of currently used parameters
+generate - executes the conversion based on the stored parameters
+help|? - shows this help
+
+The operations above can optionally be preceded by - or /, e.g. -? or /generate
 
 Parameters:
 connection-string - database connections string for the mySQL database hosting Wordpress
 host - DNS host name of the wordpress website
-topic-template - path to empty DITA topic as a template
-generateqr - boolean - true to generate QR codes for each Wordpress article
+
+output-directory - local file directory to store the generated DITA files
+topic-template - path to empty HTML page as a template
+bookmap-template - path to empty DITA bookmap as a template
+log-file - location of the output log file
+generateqr - true to generate QR codes for each Wordpress article
+
 copyright - The copyright holder
 publisher - The publisher of generated products
 author - The default author if not specified
+
+The following parameters enable progress information to assist understanding unparsed HTML
+show-progress=true - provide details of the steps being undertaken
+show-classic-editor=true - list pages using the wordpress classic editor.  It is recommended these are converted
+show-skipped=true - details of skipped html elements and attributes
+show-html-errors=true - Identifies html errors
+show-http-errors=true - Identifies errors connecting to http resources especially images
+
+Examples:
+wp2DITA list
+wp2DITA generate
+wp2DITA "connection-string=server=example.com;uid=wp2DITA;pwd=OpenSesame;database=wordpress;convert zero datetime=True"
 </value>
   </data>
 </root>

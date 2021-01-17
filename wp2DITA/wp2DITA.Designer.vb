@@ -79,7 +79,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to SELECT ID, post_name, post_date, post_title, post_content FROM wp_posts WHERE post_author=1 and post_type=&apos;post&apos; and post_status=&apos;publish&apos;.
+        '''  Looks up a localized string similar to SELECT ID, post_name, post_date, post_title, post_content FROM wp_posts WHERE post_author=1 and post_status=&apos;publish&apos;.
         '''</summary>
         Friend Shared ReadOnly Property sqlPosts() As String
             Get
@@ -102,17 +102,18 @@ Namespace My.Resources
         
         '''<summary>
         '''  Looks up a localized string similar to Syntax:
-        '''wp2dita [list] [generate] [parameter=value]
+        '''wp2dita [list] [generate] [help] ([parameter=value])
+        '''list - provides the list of currently used parameters
+        '''generate - executes the conversion based on the stored parameters
+        '''help|? - shows this help
+        '''
+        '''The operations above can optionally be preceded by - or /, e.g. -? or /generate
         '''
         '''Parameters:
         '''connection-string - database connections string for the mySQL database hosting Wordpress
         '''host - DNS host name of the wordpress website
-        '''topic-template - path to empty DITA topic as a template
-        '''generateqr - boolean - true to generate QR codes for each Wordpress article
-        '''copyright - The copyright holder
-        '''publisher - The publisher of generated products
-        '''author - The default author if not specified
-        '''.
+        '''
+        '''output-directory - local file directory to store the generated D [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property Syntax() As String
             Get

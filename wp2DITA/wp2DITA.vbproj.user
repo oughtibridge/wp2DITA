@@ -8,5 +8,8 @@
     <None Update="dsHierarchy.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Update="dtd\technicalContent\dtd\topic.dtd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
 </Project>

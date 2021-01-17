@@ -2,7 +2,7 @@
   "profiles": {
     "wp2DITA": {
       "commandName": "Project",
-      "commandLineArgs": "generate"
+      "commandLineArgs": "-?"
     }
   }
 }

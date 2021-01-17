@@ -12,7 +12,7 @@
 /*  Fonts */
 body {
   background: #ffffff;
-  font-family: Lato, Helvetica, Arial, Sans-serif;
+  font-family: Lato;
   font-size: 12px;
   font-weight: 400;
   line-height: 1.5em;
@@ -80,6 +80,12 @@ cite {
   float: left;
   padding: 1.5em 1.5em 1.5em 1.5em;
   max-width: 20em;
+}
+.has-text-align-center {
+  text-align: center;
+}
+ul.is-style-styled-unstyled {
+  list-style-type: none;
 }
 .wp-block-image {
   text-align: center;
@@ -233,11 +239,11 @@ a:hover {
 }
 .wh_tile_shortdesc {
   margin-top: 0.5em;
-  font-family: Lato, Helvetica, Arial, Sans-serif;
+  font-family: Lato;
   text-align: left;
 }
 .wh_tile_title {
-  font-family: Lato, Helvetica, Arial, Sans-serif;
+  font-family: Lato;
   text-align: left;
   font-size: 1.1em;
   text-decoration: none;
