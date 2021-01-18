@@ -2,7 +2,8 @@ out/
 */bin/
 */obj/
 temp/*
-
+*.txt
+Oxygen/*
 wp2DITA/.vs/
 wp2DITA/.vs/wp2DITA/v16/.suo
 /wp2DITA/dtd
