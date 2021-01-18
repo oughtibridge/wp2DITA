@@ -3,7 +3,12 @@ out/
 */obj/
 temp/*
 *.txt
-Oxygen/
+Oxygen/*
 wp2DITA/.vs/
 wp2DITA/.vs/wp2DITA/v16/.suo
 /wp2DITA/dtd
+/wp2DITA/Lato-Regular.ttf
+/wp2DITA/Lato-Bold.ttf
+/wp2DITA/Happenence.zip
+/wp2DITA/Happenence.opt
+/wp2DITA/FrederickatheGreat-Regular.ttf
