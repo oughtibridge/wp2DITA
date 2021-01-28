@@ -14,7 +14,7 @@
                         <scenarioAssociation-array>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>../out/map.ditamap</String>
+                                    <String>../out/category.bookmap</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
@@ -54,7 +54,7 @@
                             </scenarioAssociation>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>../out/category.bookmap</String>
+                                    <String>../out/map.ditamap</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>

@@ -63,7 +63,7 @@ Module Program
 
     Sub Generate()
         ' Load in the strings from the settings class
-        Dim filter As String = "" ' " and ID=3809"
+        Dim filter As String = "" ' and ID=7708"
         Dim template As String = settings.GetAppSetting("topic-template", "topic_template.html")
         outdir = settings.GetAppSetting("output-directory", "..\")
 
@@ -398,9 +398,10 @@ Module Program
 
     End Sub
     Public Sub ParseTextNode(node As HtmlTextNode, WrapChildText As Boolean, DITADocument As XmlDocument, ditaParent As XmlElement)
-        If Trim(CType(node, HtmlTextNode).Text) <> vbLf Then
+        Dim t As String = node.Text
+        If Trim(t) <> vbLf And t <> "" Then
 
-            Dim t As String = CType(node, HtmlTextNode).Text
+
             t = Replace(t, "&nbsp;", Chr(160).ToString)
             If WrapChildText Then
                 Dim s As XmlElement = AddElementNode(DITADocument, ditaParent, "div")
@@ -423,7 +424,8 @@ Module Program
             {"u", "ph"},
             {"caption", "desc"},
             {"tr", "row"},
-            {"td", "entry"}
+            {"td", "entry"},
+            {"g", "ph"}
             }
         Dim ditaTag As String = ""
         For i = 0 To (TagMap.Length / 2) - 1
@@ -613,8 +615,14 @@ Module Program
                     End If
                 Next
 
+
                 ' Cases where switching elements is needed
             Case "strong", "em", "u", "code", "samp", "var", "pre", "tt", "span", "tfoot", "th", "td", "tr", "thead", "caption"
+                ParseTypographic(node, DITADocument, ditaParent)
+
+            Case "g"
+
+                If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then Console.WriteLine(ditaParent.SelectSingleNode("/topic/title").InnerText & " - Grammarly <g> tag switched to <ph> for " & node.InnerText)
                 ParseTypographic(node, DITADocument, ditaParent)
 
                 'Figures etc
@@ -793,7 +801,7 @@ Module Program
         Text = Replace(Text, vbLf, " ")
         Text = Replace(Text, vbTab, " ")
 
-        Text = Trim(Text)
+        'Text = Trim(Text)
         If Text.Length > 0 Then
             Dim n As XmlText
             Select Case Parent.Name
