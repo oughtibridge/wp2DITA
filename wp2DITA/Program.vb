@@ -153,19 +153,50 @@ Module Program
 
             ' Purge empty P
 
+            If settings.GetAppSetting("purge-empty-paragraphs", "true") = "true" Then
+                For Each x As XmlElement In ditaDoc.SelectNodes("/topic/body/p")
+                    If Trim(x.InnerText) = "" Then
+                        x.InnerText = ""
+                        If x.ChildNodes.Count = 1 Then
+                            x.ParentNode.RemoveChild(x)
+                        End If
+                    End If
+                Next
+            End If
+            AddMetadata(ditaDoc, "/topic", Now())
 
-            For Each x As XmlElement In ditaDoc.SelectNodes("/topic/body/p")
-                If x.IsEmpty Then
-                    x.ParentNode.RemoveChild(x)
-                End If
+            Dim metadata As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/prolog"), "metadata", ElementPositions.AfterLast)
+            ' Add categories
+            ' Write out each category as a DITA Category.
+            ' The <category> element represents any category by which a topic might be classified for retrieval or navigation.
+            For Each drCategory As CategoryEntriesRow In dsCategories.Select("id=" & dr.ID.ToString)
+                AddElementNodeWithText(ditaDoc, metadata, "category", drCategory.name)
             Next
 
-            AddMetadata(ditaDoc, "/topic", Now())
-            ' Add categories
-            Dim metadata As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/prolog"), "metadata", ElementPositions.AfterLast)
+            ' Add keywords
+            ' The <keywords> element contains a list of terms from a controlled or uncontrolled subject vocabulary that applies to the topic or map. 
+            ' The keywords can be used by a search engine. The keywords are marked up using the <indexterm> And/Or <keyword> elements.
+            ' For the prolog we use indexterm
+
             Dim keywords As XmlElement = AddElementNode(ditaDoc, metadata, "keywords")
             For Each drCategory As CategoryEntriesRow In dsCategories.Select("id=" & dr.ID.ToString)
                 AddElementNodeWithText(ditaDoc, keywords, "indexterm", drCategory.name)
+            Next
+
+            ' Add the published content for the categories
+            Dim footerSection As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/body"), "section", ElementPositions.AfterLast)
+            Dim footertitle As XmlElement = AddElementNodeWithText(ditaDoc, footerSection, "title", "Categories")
+            AddAttributeNode(footertitle, "outputclass", "wp2dita-footer-title")
+            Dim sl As XmlElement = AddElementNode(ditaDoc, footerSection, "sl")
+            AddAttributeNode(sl, "outputclass", "wp2dita-category-list")
+
+            Dim cats = From d In dsCategories
+                       Where d.ID = dr.ID
+                       Order By d.taxonomy Ascending, d.name Ascending
+                       Select d.taxonomy, d.name
+
+            For Each drCategory In cats ' dsCategories.Select("id=" & dr.ID.ToString).
+                AddAttributeNode(AddElementNodeWithText(ditaDoc, sl, "sli", drCategory.name & "; "), "outputclass", "wp2dita-category-item wp2dita-category-type-" & drCategory.taxonomy)
             Next
             ' Write out the DITA topic
 
@@ -212,7 +243,6 @@ Module Program
                 MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "prolog", ElementPositions.AfterFirst)
             Case "/bookmap"
                 MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "bookmeta", ElementPositions.AfterFirst)
-
             Case Else
                 MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "topicmeta", ElementPositions.AfterFirst)
         End Select
@@ -230,9 +260,6 @@ Module Program
             Dim created As XmlElement = AddElementNode(ditaDoc, critdates, "created")
             AddAttributeNode(created, "date", postDate.ToString("yyyy-MM-dd"))
         End If
-
-
-
 
     End Sub
 

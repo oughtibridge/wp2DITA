@@ -16,7 +16,9 @@
 @HappenenceQuote:#606060;
 @HappenenceAttr: #bbb;
 @HappenenceBackground:white;
+@HappenenceFontSize:12px;
 
+@HappenenceLineSpacing: 1.5em;
 @HappenenceMainTitleSize: 96px;
 @HappenenceAltTitleSize: 24px;
 
@@ -51,19 +53,15 @@ article is-chapter {
       column-fill:auto;
 }
 
-h1.title  is-chapter {
-    page: two-columns-page;
-    column-span: all;
-    padding-bottom:2em;
-    line-height: 1.5em;
-}
 
+/* Categories as inline lists */
+.wp2dita-category-item {
+    display: -oxy-morph;
+}
 ol, li {
     page-break-inside:avoid;
 }
-section.section {
-    page-break-inside:avoid;
-}
+
 /*  Avoid page break in a figure and caption*/
 figure.fig {
     page-break-inside:avoid;
@@ -94,8 +92,17 @@ section.section {
   border: none;
   padding: 0em 0em 0em 0em;
   background-color: inherit;
+   page-break-inside:avoid;
 
 }
+h2, h2.sectiontitle {
+      font-size: @HappenenceFontSize;
+  font-weight: bold;
+  color:fuchsia;
+    line-height: @HappenenceLineSpacing;
+    padding-top:1em;  
+}
+
 
 /*  override the floats on images */
 /*  since PDF Chemistry doesn't support them */
@@ -204,3 +211,13 @@ booktitle:after {
     display: block;
 }
 
+*[class ~= "topic/topic"][is-chapter] > *[class ~= "topic/title"] {
+  column-span:all;
+    font-family: Lato;
+    text-align: center;
+    text-transform: none;
+    line-height: 38px;
+    letter-spacing: 0px;
+    font-size: 24px;
+    font-display: swap;
+}
