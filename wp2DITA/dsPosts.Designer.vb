@@ -293,6 +293,8 @@ Namespace wp2DITA
             
             Private columnpost_content As Global.System.Data.DataColumn
             
+            Private columnpost_type As Global.System.Data.DataColumn
+            
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
             Public Sub New()
@@ -369,6 +371,14 @@ Namespace wp2DITA
             End Property
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public ReadOnly Property post_typeColumn() As Global.System.Data.DataColumn
+                Get
+                    Return Me.columnpost_type
+                End Get
+            End Property
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0"),  _
              Global.System.ComponentModel.Browsable(false)>  _
             Public ReadOnly Property Count() As Integer
@@ -405,9 +415,9 @@ Namespace wp2DITA
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
-            Public Overloads Function AddPostsRow(ByVal ID As ULong, ByVal post_name As String, ByVal post_date As Date, ByVal post_title As String, ByVal post_content As String) As PostsRow
+            Public Overloads Function AddPostsRow(ByVal ID As ULong, ByVal post_name As String, ByVal post_date As Date, ByVal post_title As String, ByVal post_content As String, ByVal post_type As String) As PostsRow
                 Dim rowPostsRow As PostsRow = CType(Me.NewRow,PostsRow)
-                Dim columnValuesArray() As Object = New Object() {ID, post_name, post_date, post_title, post_content}
+                Dim columnValuesArray() As Object = New Object() {ID, post_name, post_date, post_title, post_content, post_type}
                 rowPostsRow.ItemArray = columnValuesArray
                 Me.Rows.Add(rowPostsRow)
                 Return rowPostsRow
@@ -435,6 +445,7 @@ Namespace wp2DITA
                 Me.columnpost_date = MyBase.Columns("post_date")
                 Me.columnpost_title = MyBase.Columns("post_title")
                 Me.columnpost_content = MyBase.Columns("post_content")
+                Me.columnpost_type = MyBase.Columns("post_type")
             End Sub
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -450,6 +461,8 @@ Namespace wp2DITA
                 MyBase.Columns.Add(Me.columnpost_title)
                 Me.columnpost_content = New Global.System.Data.DataColumn("post_content", GetType(String), Nothing, Global.System.Data.MappingType.Element)
                 MyBase.Columns.Add(Me.columnpost_content)
+                Me.columnpost_type = New Global.System.Data.DataColumn("post_type", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+                MyBase.Columns.Add(Me.columnpost_type)
                 Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnID}, false))
                 Me.columnID.Unique = true
             End Sub
@@ -673,6 +686,21 @@ Namespace wp2DITA
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Property post_type() As String
+                Get
+                    Try 
+                        Return CType(Me(Me.tablePosts.post_typeColumn),String)
+                    Catch e As Global.System.InvalidCastException
+                        Throw New Global.System.Data.StrongTypingException("The value for column 'post_type' in table 'Posts' is DBNull.", e)
+                    End Try
+                End Get
+                Set
+                    Me(Me.tablePosts.post_typeColumn) = value
+                End Set
+            End Property
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
             Public Function IsIDNull() As Boolean
                 Return Me.IsNull(Me.tablePosts.IDColumn)
             End Function
@@ -729,6 +757,18 @@ Namespace wp2DITA
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
             Public Sub Setpost_contentNull()
                 Me(Me.tablePosts.post_contentColumn) = Global.System.Convert.DBNull
+            End Sub
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Function Ispost_typeNull() As Boolean
+                Return Me.IsNull(Me.tablePosts.post_typeColumn)
+            End Function
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Sub Setpost_typeNull()
+                Me(Me.tablePosts.post_typeColumn) = Global.System.Convert.DBNull
             End Sub
         End Class
         

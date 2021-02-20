@@ -13,8 +13,7 @@ Module Program
     Dim OldPosts As Integer = 0
     Dim logWriter As TextWriter
     Dim conn As New MySql.Data.MySqlClient.MySqlConnection
-    Dim outdir As String = ""
-    Dim CheckImages As Boolean = False
+    Dim OutputDirectory As String = ""
     Dim Styles As New List(Of Style)
     Dim Client As New WebClient
     Dim Host As String
@@ -22,7 +21,75 @@ Module Program
     Dim LastErrorPage As String = "zzz"
     Dim CategoriesAdaptor As MySqlDataAdapter
     Dim dsCategories As CategoryEntriesDataTable
+    Dim Closure As List(Of ClosureEntry)
+    Dim LogEntries As New List(Of LogEntry)
+    Public Enum ElementPositions
+        Beginning
+        AfterFirst
+        BeforeLast
+        AfterLast
+    End Enum
+    Public Enum LogLevel
+        Information
+        Warning
+        [Error]
+    End Enum
+    Public Class LogEntry
+        Public Property Level As LogLevel
+        Public Property LogMessage As String
+        Public Property LogURL As Uri
+        Public Property Time As DateTime
+
+    End Class
+    Public Sub AddLogEntry(Source As String, Level As LogLevel, Message As String, Optional URL As String = "")
+        Dim LE As New LogEntry With {
+            .Level = Level, .LogMessage = Message, .Time = Now()}
+        If URL <> "" Then
+            If Left(URL, 4) <> "http" Then
+                URL = "https://" & settings.GetAppSetting("host") & "/" & URL
+            End If
+            LE.LogURL = New Uri(URL)
+        End If
+        LogEntries.Add(LE)
+        Console.WriteLine(Now.ToString("yyyy-MMM-dd HH:mm:ss:fff") & " " & LE.LogMessage)
+    End Sub
+
+    Public Sub WriteLogHTML(LogEntries As List(Of LogEntry))
+        Dim entries = From le In LogEntries
+                      Order By le.Time, le.Level Descending, le.LogMessage
+                      Select le.Level, le.Time, le.LogURL, le.LogMessage
+        ' Load template
+        Dim template As String = settings.GetAppSetting("topic-template", "topic_template.html")
+        Dim TemplateText As String = File.ReadAllText(template)
+
+
+        Dim Body As String = "<table>" & vbCrLf
+        Body &= "<tr><th>Page</th><th>Message</th></tr>" & vbCrLf
+        For Each e In entries
+            Dim u As String
+            If Not IsNothing(e.LogURL) Then
+                u = "<a href=" & e.LogURL.ToString & ">" & e.Level.ToString & "</a>"
+            Else
+                u = e.Level.ToString
+            End If
+            Body &= "<tr><td>" & u & "</td><td>" & e.LogMessage & "</td></tr>" & vbCrLf
+        Next
+        Dim f As String = TemplateText
+        f = Replace(f, "${title}", "Errors")
+        f = Replace(f, "${body}", Body)
+        f = Replace(f, "${postdate}", Now.ToString("dd MMM yyyy HH:mm:ss"))
+        f = Replace(f, "${copyyear}", Now.ToString("yyyy"))
+        Dim htmlDoc = New HtmlDocument()
+        htmlDoc.OptionFixNestedTags = True
+        htmlDoc.OptionWriteEmptyNodes = True
+        htmlDoc.OptionOutputAsXml = False
+
+        htmlDoc.LoadHtml(f)
+        htmlDoc.Save(OutputDirectory & "\errors.htm")
+    End Sub
     Sub Main(args As String())
+
+        AddLogEntry("Main-1", LogLevel.Information, "Started")
         ' Set up the initial values for parameters
         Dim Help As Boolean = False
         If args.Count = 0 Then
@@ -41,13 +108,14 @@ Module Program
                         For Each appS In settings.GetAllAppSettings
                             Console.WriteLine(appS.Name & "=" & appS.Value)
                         Next
-                        Console.WriteLine()
+
                     Case "generate", "g"
                         Generate()
+                        WriteLogHTML(LogEntries)
                     Case "help", "?"
                         Help = True
                     Case Else
-                        Console.WriteLine("Syntax error: " & s)
+                        AddLogEntry("Main-2", LogLevel.Error, "Syntax error: " & s, "")
                         Help = True
                 End Select
             End If
@@ -63,34 +131,35 @@ Module Program
 
     Sub Generate()
         ' Load in the strings from the settings class
-        Dim filter As String = "" ' and ID=7708"
-        Dim template As String = settings.GetAppSetting("topic-template", "topic_template.html")
-        outdir = settings.GetAppSetting("output-directory", "..\")
+        Dim filter As String = "" ' "ID=4677"
+        OutputDirectory = settings.GetAppSetting("output-directory", "..\")
 
         Dim myConnectionString As String = settings.GetAppSetting("connection-string", "")
         Host = settings.GetAppSetting("host", "localhost")
 
         ' Load template
+        Dim template As String = settings.GetAppSetting("topic-template", "topic_template.html")
         Dim TemplateText As String = File.ReadAllText(template)
 
         Try
             conn.ConnectionString = myConnectionString
             conn.Open()
-            If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Console.WriteLine("Opened")
+            If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then AddLogEntry("Generate-1", LogLevel.Information, "Opened", "")
         Catch ex As MySql.Data.MySqlClient.MySqlException
-            Console.WriteLine(ex.Message)
+            AddLogEntry("Generate-2", LogLevel.Error, ex.Message, "")
             Exit Sub
         End Try
 
         ' Now we have a database connection
-        Dim sql As New MySqlCommand(My.Resources.wp2DITA.sqlPosts & filter, conn)
+        Dim sql As New MySqlCommand(My.Resources.wp2DITA.sqlPosts, conn)
         Dim TopicsAdaptor = New MySqlDataAdapter(sql)
+
+        Closure = BuildClosure(conn)
         CreateCategoryHierarchy(conn)
+        CreateCategoryMap2(conn)
         CreateCategoryMap(conn)
 
-
-
-        logWriter = New System.IO.StreamWriter(settings.GetAppSetting("log-file", "..\logfile.txt"))
+        '        logWriter = New System.IO.StreamWriter(settings.GetAppSetting("log-file", "..\logfile.txt"))
 
         ' Set up an all encompasing DITA Map
         Dim ditaMapDoc As XmlDocument = NewDITAMap()
@@ -101,9 +170,10 @@ Module Program
 
         If settings.GetAppSetting("GenerateQR", "False").ToLower = "true" Then GenerateQRImage(dsPosts)
 
-        For Each dr As wp2DITA.PostsDataSet.PostsRow In dsPosts.Posts.Rows
-            Dim htmlOut As String = outdir & "\" & dr.post_name & ".html"
-            Dim ditaOut As String = outdir & "\" & dr.post_name & ".dita"
+        For Each dr As wp2DITA.PostsDataSet.PostsRow In dsPosts.Posts.Select(filter)
+            AddLogEntry("Generate", LogLevel.Information, "Starting topic:" & dr.post_name, dr.post_name)
+            Dim htmlOut As String = OutputDirectory & "\" & dr.post_name & ".html"
+            Dim ditaOut As String = OutputDirectory & "\" & dr.post_name & ".dita"
             Dim ditaoutRef As String = dr.post_name & ".dita"
 
             ID = CInt(dr("ID"))
@@ -114,7 +184,7 @@ Module Program
             If InStr(PostContent, "<p>") = 0 Then
                 OldPosts += 1
 
-                If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then Console.WriteLine(dr.post_title)
+                If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then AddLogEntry("Generate-3", LogLevel.Information, dr.post_title, dr.post_name)
                 PostContent = "<p>" & PostContent & "</p>"
 
                 ' Remove multiple linefeeds
@@ -123,11 +193,10 @@ Module Program
                 Loop
                 ' convert linefeed to new paragraph
                 PostContent = Replace(PostContent, vbLf, "</p><p>")
-            Else
-                ' Add to the map
-                AddMapRef("topicref", ditaoutRef, "local", ditaMapDoc, maproot)
-
             End If
+
+            ' Add to the map
+            Dim MapEntry As XmlElement = AddMapRef("topicref", ditaoutRef, "local", ditaMapDoc, maproot)
 
             Dim f As String = TemplateText
             f = Replace(f, "${title}", dr.post_title)
@@ -155,15 +224,17 @@ Module Program
 
             If settings.GetAppSetting("purge-empty-paragraphs", "true") = "true" Then
                 For Each x As XmlElement In ditaDoc.SelectNodes("/topic/body/p")
-                    If Trim(x.InnerText) = "" Then
-                        x.InnerText = ""
-                        If x.ChildNodes.Count = 1 Then
+                    If Trim(x.InnerText) = "" Or x.InnerText = "\r" Or x.InnerText = vbCr Then
+
+                        'x.InnerText = ""
+                        If x.ChildNodes.Count = 0 Then '  And x.FirstChild.NodeType = XmlNodeType.Text Then
                             x.ParentNode.RemoveChild(x)
                         End If
                     End If
                 Next
             End If
-            AddMetadata(ditaDoc, "/topic", Now())
+
+            AddMetadata(ditaDoc, "/topic", dr.post_date)
 
             Dim metadata As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/prolog"), "metadata", ElementPositions.AfterLast)
             ' Add categories
@@ -180,24 +251,53 @@ Module Program
 
             Dim keywords As XmlElement = AddElementNode(ditaDoc, metadata, "keywords")
             For Each drCategory As CategoryEntriesRow In dsCategories.Select("id=" & dr.ID.ToString)
-                AddElementNodeWithText(ditaDoc, keywords, "indexterm", drCategory.name)
-            Next
+                Dim catList As String = drCategory.name
+                AddElementNodeWithText(ditaDoc, keywords, "indexterm", catList)
 
-            ' Add the published content for the categories
-            Dim footerSection As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/body"), "section", ElementPositions.AfterLast)
-            Dim footertitle As XmlElement = AddElementNodeWithText(ditaDoc, footerSection, "title", "Categories")
-            AddAttributeNode(footertitle, "outputclass", "wp2dita-footer-title")
-            Dim sl As XmlElement = AddElementNode(ditaDoc, footerSection, "sl")
-            AddAttributeNode(sl, "outputclass", "wp2dita-category-list")
+                Dim Ancestors = From cl In Closure
+                                Where cl.Descendant = drCategory.name
+                                Order By cl.Generations Ascending
+                                Select cl.Ancestor
+
+                For Each Ancestor In Ancestors
+                    AddElementNodeWithText(ditaDoc, keywords, "indexterm", Ancestor)
+                Next
+
+
+            Next
 
             Dim cats = From d In dsCategories
                        Where d.ID = dr.ID
                        Order By d.taxonomy Ascending, d.name Ascending
                        Select d.taxonomy, d.name
 
-            For Each drCategory In cats ' dsCategories.Select("id=" & dr.ID.ToString).
-                AddAttributeNode(AddElementNodeWithText(ditaDoc, sl, "sli", drCategory.name & "; "), "outputclass", "wp2dita-category-item wp2dita-category-type-" & drCategory.taxonomy)
-            Next
+            If cats.Count > 0 Then
+                ' Add the published content for the categories
+                Dim footerSection As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/body"), "section", ElementPositions.AfterLast)
+                Dim footerTitle As XmlElement = AddElementNodeWithText(ditaDoc, footerSection, "title",
+                                                               settings.GetAppSetting("category-list-heading", "Filed under"))
+                AddAttributeNode(footerTitle, "outputclass", "wp2dita-footer-title")
+                Dim sl As XmlElement = AddElementNode(ditaDoc, footerSection, "sl")
+                AddAttributeNode(sl, "outputclass", "wp2dita-category-list")
+                For Each drCategory In cats
+                    AddAttributeNode(AddElementNodeWithText(ditaDoc, sl, "sli", drCategory.name & "; "), "outputclass", "wp2dita-category-item wp2dita-category-type-" & drCategory.taxonomy)
+
+                    Dim Ancestors = From cl In Closure
+                                    Where cl.Descendant = drCategory.name
+                                    Order By cl.Generations Ascending
+                                    Select cl.Ancestor
+                    For Each Ancestor In Ancestors
+                        AddAttributeNode(AddElementNodeWithText(ditaDoc, sl, "sli", Ancestor & "; "), "outputclass", "wp2dita-category-item wp2dita-category-type-" & drCategory.taxonomy)
+                    Next
+                Next
+            End If
+            AddOtherProps(MapEntry, dr.ID, dr.post_type, dr.post_name)
+
+            Dim PubSection As XmlElement = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode("/topic/body"), "section", ElementPositions.AfterLast)
+            Dim PubTitle As XmlElement = AddElementNodeWithText(ditaDoc, PubSection, "title",
+                                                               settings.GetAppSetting("published-heading", "Published"))
+            AddAttributeNode(PubTitle, "outputclass", "wp2dita-footer-title")
+            AddElementNodeWithText(ditaDoc, PubSection, "p", Format(dr.post_date, "dddd, dd MMMM yyyy"))
             ' Write out the DITA topic
 
             Dim writer As New XmlTextWriter(ditaOut, Nothing)
@@ -205,21 +305,81 @@ Module Program
             writer.Formatting = Formatting.Indented
             ditaDoc.Save(writer)
             writer.Close()
-        Next
-        ditaMapDoc.Save(outdir & "\map.ditamap")
+            AddLogEntry("Generate", LogLevel.Information, "Completed topic:" & dr.post_name, dr.post_name)
 
-        Dim cssFile As New System.IO.StreamWriter(outdir & "\styles.css")
+        Next
+        ditaMapDoc.Save(OutputDirectory & "\map.ditamap")
+
+        WriteStyes(Styles)
+
+        If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then AddLogEntry("Generate-4", LogLevel.Information, "There are " & OldPosts.ToString & " posts in the old format")
+
+        conn.Close()
+        Client.Dispose()
+    End Sub
+
+
+    Private Sub WriteStyes(Styles As List(Of Style))
+        Dim cssFile As New System.IO.StreamWriter(OutputDirectory & "\styles.css")
 
         For Each s As Style In Styles.OrderByDescending(Function(x) x.Count).ToList()
             cssFile.WriteLine("." & s.Name & "{")
             cssFile.WriteLine("}")
         Next
-        If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then Console.WriteLine("There are " & OldPosts.ToString & " posts in the old format")
-        logWriter.Close()
         cssFile.Close()
-        conn.Close()
-        Client.Dispose()
     End Sub
+
+    Private Function BuildClosure(Conn As MySqlConnection) As List(Of ClosureEntry)
+        AddLogEntry("BuildClosure", LogLevel.Information, "Building closure", "")
+        Dim Result As New List(Of ClosureEntry)
+
+        Dim strSql As String = My.Resources.wp2DITA.sqlHierarchy
+
+        Dim sql As New MySqlCommand(strSql, Conn)
+        ' slug contains the file name to use
+        ' taxonomy has the type of taxonomy (category / location / tag etc)
+
+        Dim CategoriesAdaptor = New MySqlDataAdapter(sql)
+        Dim dsHierarchy As New DataSet
+        CategoriesAdaptor.Fill(dsHierarchy)
+
+        For Each h As DataRow In dsHierarchy.Tables(0).Rows
+            Dim Entry As New ClosureEntry With {
+                .Ancestor = h("Ancestor"),
+                .Descendant = h("Descendant"),
+                .Generations = 1,
+                .Taxonomy = h("Taxonomy")
+            }
+            Result.Add(Entry)
+        Next
+        Dim NextCount As Integer = Result.Count
+        Dim Generation As Integer = 1
+        While NextCount <> 0
+            NextCount = 0
+            Dim NextGen As New List(Of ClosureEntry)
+            For Each ce As ClosureEntry In From r As ClosureEntry In Result
+                                           Where r.Generations = Generation
+                Dim Parents = From p In Result
+                              Where p.Descendant = ce.Ancestor And p.Generations = 1
+
+
+                For Each ce2 As ClosureEntry In Parents
+                    NextGen.Add(New ClosureEntry With {
+                               .Ancestor = ce2.Ancestor,
+                               .Descendant = ce.Descendant,
+                               .Taxonomy = ce.Taxonomy,
+                               .Generations = Generation + 1}
+                               )
+                    NextCount += 1
+                Next
+            Next
+            Result.AddRange(NextGen)
+            Generation += 1
+        End While
+
+        AddLogEntry("BuildClosure", LogLevel.Information, "Built closure", "")
+        Return Result
+    End Function
 
     Private Sub GenerateQRImage(dsPosts As wp2DITA.PostsDataSet)
         ' Generate QR label
@@ -228,40 +388,13 @@ Module Program
             Dim locFile As String = "images/" & dr.post_name & ".svg"
             locFile = System.Web.HttpUtility.UrlDecode(locFile)
             If Not File.Exists(locFile) Then
-                Client.DownloadFile("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=100x100&data=" & "https://" & Host & "/" & dr.post_name, outdir & "/" & locFile)
+                Client.DownloadFile("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=100x100&data=" & "https://" & Host & "/" & dr.post_name, OutputDirectory & "/" & locFile)
 
             End If
         Next
 
     End Sub
 
-    Private Sub AddMetadata(ditaDoc As XmlDocument, XMLPath As String, postDate As Date)
-        ' Add metadata
-        Dim MetadataContainer As XmlElement
-        Select Case XMLPath
-            Case "/topic"
-                MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "prolog", ElementPositions.AfterFirst)
-            Case "/bookmap"
-                MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "bookmeta", ElementPositions.AfterFirst)
-            Case Else
-                MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "topicmeta", ElementPositions.AfterFirst)
-        End Select
-
-        ' Add metadata
-        AddElementNodeWithText(ditaDoc, MetadataContainer, "author", settings.GetAppSetting("author", ""))
-        AddElementNodeWithText(ditaDoc, MetadataContainer, "source", "https://happenence.co.uk")
-        If XMLPath <> "/bookmap" Then
-            AddElementNodeWithText(ditaDoc, MetadataContainer, "publisher", settings.GetAppSetting("publisher", ""))
-            Dim copyright As XmlElement = AddElementNode(ditaDoc, MetadataContainer, "copyright")
-            Dim copyryear As XmlElement = AddElementNode(ditaDoc, copyright, "copyryear")
-            AddAttributeNode(copyryear, "year", postDate.ToString("yyyy"))
-            AddElementNodeWithText(ditaDoc, copyright, "copyrholder", settings.GetAppSetting("copyright", ""))
-            Dim critdates As XmlElement = AddElementNode(ditaDoc, MetadataContainer, "critdates")
-            Dim created As XmlElement = AddElementNode(ditaDoc, critdates, "created")
-            AddAttributeNode(created, "date", postDate.ToString("yyyy-MM-dd"))
-        End If
-
-    End Sub
 
     Public Sub CreateCategoryHierarchy(conn As MySqlConnection, Optional ParentID As Integer = 0)
         Dim strSql As String = My.Resources.wp2DITA.sqlTaxomony
@@ -285,11 +418,11 @@ Module Program
             If Not drEntry.IsParent_nameNull Then
                 If drEntry.Grandparent_id = ParentID Then
                     If drEntry.taxonomy <> LastTax Then
-                        If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Console.WriteLine("Hierarchy " & drEntry.taxonomy)
+                        If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then AddLogEntry("CreateCategoryHierarchy", LogLevel.Information, "Hierarchy " & drEntry.taxonomy)
                         If LastTax <> "zzz" Then
 
                             ' close last map
-                            Dim TaxMapFilename As String = outdir & "\" & LastTax & ".ditamap"
+                            Dim TaxMapFilename As String = OutputDirectory & "\" & LastTax & ".ditamap"
                             TaxMapList.Add(LastTax & ".ditamap")
                             TaxMap.Save(TaxMapFilename)
                             createBookmap(TaxMapList, LastTax)
@@ -305,7 +438,7 @@ Module Program
                                 'Dim titleLast As XmlElement = AddElementNode(hierarchyMap, hierarchyMap.SelectSingleNode("/map"), "title")
                                 ' close last map
                                 AddMetadata(hierarchyMap, "/map", Now())
-                                hierarchyMap.Save(outdir & "\" & "hierarchy_" & LastCat & ".ditamap")
+                                hierarchyMap.Save(OutputDirectory & "\" & "hierarchy_" & LastCat & ".ditamap")
                             End If
                             hierarchyMap = NewDITAMap()
                             LastCat = drEntry.taxonomy & "_" & drEntry.Parent_slug
@@ -320,12 +453,12 @@ Module Program
         Next
         If LastCat <> "zzz" Then
             ' close last category map
-            hierarchyMap.Save(outdir & "\" & "hierarchy_" & LastCat & ".ditamap")
+            hierarchyMap.Save(OutputDirectory & "\" & "hierarchy_" & LastCat & ".ditamap")
         End If
 
         If LastTax <> "zzz" Then
             ' close the last taxonomy map
-            TaxMap.Save(outdir & "\" & LastTax & ".ditamap")
+            TaxMap.Save(OutputDirectory & "\" & LastTax & ".ditamap")
         End If
     End Sub
 
@@ -341,7 +474,51 @@ Module Program
         Next
         AddTextNode(bookmapDoc, bookmapDoc.SelectSingleNode("/bookmap/booktitle/mainbooktitle"), "A title")
         AddTextNode(bookmapDoc, bookmapDoc.SelectSingleNode("/bookmap/booktitle/booktitlealt"), "A subtitle")
-        bookmapDoc.Save(outdir & "\" & Title & ".bookmap")
+        bookmapDoc.Save(OutputDirectory & "\" & Title & ".bookmap")
+    End Sub
+    Public Sub CreateCategoryMap2(conn As MySqlConnection)
+        Dim sql As New MySqlCommand(My.Resources.wp2DITA.sqlCategories, conn)
+        CategoriesAdaptor = New MySqlDataAdapter(sql)
+        dsCategories = New wp2DITA._CategoryEntries.CategoryEntriesDataTable
+        CategoriesAdaptor.Fill(dsCategories)
+
+        Dim AllCategories = From c In dsCategories
+                            Select c.name, c.taxonomy Distinct
+
+        For Each c In AllCategories
+            ' Get the list of posts in the category or any subcategories
+            Dim SubCategories = From cl In Closure
+                                Where cl.Ancestor = c.name
+                                Select cl.Descendant, cl.Taxonomy
+
+            Dim inClause As New List(Of String)
+            inClause.Add(c.name) ' Add the top level category
+
+            For Each sc In SubCategories
+                inClause.Add(sc.Descendant) ' Add the descendant
+            Next
+
+            Dim Posts = From p As CategoryEntriesRow In dsCategories
+                        Where inClause.Contains(p.name)
+                        Order By p.post_date_gmt
+                        Select p.post_name, p.ID, p.post_type
+
+            ' Now set up the map file
+            Dim catMap As XmlDocument = NewDITAMap()
+            Dim t As XmlElement = AddElementNode(catMap, catMap.SelectSingleNode("/map"), "title")
+            AddTextNode(catMap, t, c.name)
+            AddMetadata(catMap, "/map", Now())
+            Dim filename As String = OutputDirectory & "\" & c.taxonomy & "_" & Replace(c.name, "/", "") & "-2.ditamap"
+            For Each post In Posts
+                Dim tr As XmlElement = AddMapRef("topicref", post.post_name & ".dita", "local", catMap, catMap.SelectSingleNode("/map"))
+                AddOtherProps(tr, post.ID, post.post_type, post.post_name)
+            Next
+
+            ' Save the ditamap
+            catMap.Save(filename)
+
+        Next
+
     End Sub
     Public Sub CreateCategoryMap(conn As MySqlConnection)
 
@@ -352,6 +529,7 @@ Module Program
         CategoriesAdaptor = New MySqlDataAdapter(sql)
         dsCategories = New wp2DITA._CategoryEntries.CategoryEntriesDataTable
         CategoriesAdaptor.Fill(dsCategories)
+
         Dim MapList As New List(Of String)
 
 
@@ -361,7 +539,7 @@ Module Program
             If LastCat <> drCatEntry.taxonomy & "_" & drCatEntry.slug Then
                 If LastCat <> "zzz" Then
                     ' close last map
-                    Dim filename As String = outdir & "\" & LastCat & ".ditamap"
+                    Dim filename As String = OutputDirectory & "\" & LastCat & ".ditamap"
                     MapList.Add(filename)
                     AddMetadata(catMap, "/map", Now())
 
@@ -373,12 +551,83 @@ Module Program
                 AddTextNode(catMap, t, drCatEntry.name)
 
             End If
-            AddMapRef("topicref", drCatEntry.post_name & ".dita", "local", catMap, catMap.SelectSingleNode("/map"))
+            If drCatEntry.post_type = "post" Then
+                Dim tr As XmlElement = AddMapRef("topicref", drCatEntry.post_name & ".dita", "local", catMap, catMap.SelectSingleNode("/map"))
+                AddOtherProps(tr, drCatEntry.ID, drCatEntry.post_type, drCatEntry.post_name)
+            End If
         Next
         If LastCat <> "zzz" Then
             ' close last map
             AddMetadata(catMap, "/map", Now())
-            catMap.Save(outdir & "\" & LastCat & ".ditamap")
+            catMap.Save(OutputDirectory & "\" & LastCat & ".ditamap")
+        End If
+
+    End Sub
+    Public Function NewDITAMap() As XmlDocument
+        Dim ditaMapDoc As New XmlDocument
+        ditaMapDoc.AppendChild(ditaMapDoc.CreateXmlDeclaration("1.0", "UTF-8", Nothing))
+        Dim docMapType As XmlDocumentType = ditaMapDoc.CreateDocumentType("map", "-//OASIS//DTD DITA Map//EN", "map.dtd", Nothing)
+        ditaMapDoc.AppendChild(docMapType)
+        Dim mapRoot As XmlElement = AddElementNode(ditaMapDoc, ditaMapDoc, "map")
+        Return (ditaMapDoc)
+    End Function
+    Private Sub AddMetadata(ditaDoc As XmlDocument, XMLPath As String, FirstDate As Date)
+        ' Add metadata
+        Dim MetadataContainer As XmlElement
+        Select Case XMLPath
+            Case "/topic"
+                MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "prolog", ElementPositions.AfterFirst)
+            Case "/bookmap"
+                MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "bookmeta", ElementPositions.AfterFirst)
+            Case Else
+                MetadataContainer = AddElementNode(ditaDoc, ditaDoc.SelectSingleNode(XMLPath), "topicmeta", ElementPositions.AfterFirst)
+        End Select
+
+        ' Add metadata
+        AddElementNodeWithText(ditaDoc, MetadataContainer, "author", settings.GetAppSetting("author", ""))
+        AddElementNodeWithText(ditaDoc, MetadataContainer, "source", "https://happenence.co.uk")
+        If XMLPath <> "/bookmap" Then
+            AddElementNodeWithText(ditaDoc, MetadataContainer, "publisher", settings.GetAppSetting("publisher", ""))
+            Dim copyright As XmlElement = AddElementNode(ditaDoc, MetadataContainer, "copyright")
+            Dim copyryear As XmlElement = AddElementNode(ditaDoc, copyright, "copyryear")
+
+            AddAttributeNode(copyryear, "year", FirstDate.ToString("yyyy"))
+            AddElementNodeWithText(ditaDoc, copyright, "copyrholder", settings.GetAppSetting("copyright", ""))
+            Dim critdates As XmlElement = AddElementNode(ditaDoc, MetadataContainer, "critdates")
+            Dim created As XmlElement = AddElementNode(ditaDoc, critdates, "created")
+            AddAttributeNode(created, "date", FirstDate.ToString("yyyy-MM-dd"))
+        End If
+
+    End Sub
+    Private Sub AddOtherProps(Element As XmlElement, PostID As Integer, PostType As String, Slug As String)
+
+        Dim cats = From d In dsCategories
+                   Where d.ID = PostID
+                   Order By d.taxonomy Ascending, d.name Ascending
+                   Select d.taxonomy, d.name
+
+        Dim OtherProps As String = ""
+        OtherProps &= "topic(" & PostID.ToString & ") post_type(" & PostType & ") slug(" & Slug & ")"
+
+        If cats.Count > 0 Then
+            For Each drCategory In cats ' dsCategories.Select("id=" & dr.ID.ToString).
+                ' Build up the otherprops values
+                ' Add in the parent tags
+                Dim close = From c In Closure
+                            Where c.Descendant = drCategory.name And c.Taxonomy = drCategory.taxonomy
+                            Select c.Ancestor
+
+                If close.Count > 0 Then
+                    Dim lst As String = " "
+                    For Each c In close
+                        lst &= Replace(c, " ", "-") & " "
+                    Next
+                    OtherProps &= " " & drCategory.taxonomy & "(" & lst & Replace(drCategory.name, " ", "-") & ")"
+                Else
+                    OtherProps &= " " & drCategory.taxonomy & "(" & Replace(drCategory.name, " ", "-") & ")"
+                End If
+            Next
+            AddAttributeNode(Element, "otherprops", OtherProps)
         End If
 
     End Sub
@@ -438,7 +687,6 @@ Module Program
             End If
         End If
     End Sub
-
     Public Sub ParseTypographic(node As HtmlNode, ditaDocument As XmlDocument, ditaParent As XmlElement)
         Dim TagMap(,) As String = {
             {"strong", "b"},
@@ -486,12 +734,12 @@ Module Program
                             s = AddElementNode(ditaDocument, ditaParent.LastChild, ditaTag)
                         Case Else
                             s = AddElementNode(ditaDocument, ditaParent, ditaTag)
-                            If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then Console.WriteLine("Invalid " & ditaTag & " tag created from " & node.Name)
+                            If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then AddLogEntry("ParseTypographic-1", LogLevel.Warning, "Invalid " & ditaTag & " tag created from " & node.Name)
                     End Select
                 Else
                     Dim p As XmlElement = AddElementNode(ditaDocument, ditaParent, "bodydiv")
                     s = AddElementNode(ditaDocument, p, ditaTag)
-                    If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then Console.WriteLine("bodydiv used to wrap " & ditaTag & " tag created from " & node.Name)
+                    If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then AddLogEntry("ParseTypographic-2", LogLevel.Information, "bodydiv used to wrap " & ditaTag & " tag created from " & node.Name)
                 End If
         End Select
         AddAttributeNode(s, "outputclass", "html-" & node.Name)
@@ -548,13 +796,13 @@ Module Program
                                     Dim lep As String = ditaParent.SelectSingleNode("/topic/title").InnerText
                                     If lep <> LastErrorPage Then
                                         LastErrorPage = lep
-                                        Console.WriteLine(LastErrorPage)
+                                        AddLogEntry("ParseAttribute-1", LogLevel.Information, LastErrorPage)
                                     End If
-                                    Console.WriteLine("Insecure image - " & u.ToString)
+                                    AddLogEntry("ParseAttribute-2", LogLevel.Warning, "Insecure image - " & u.ToString, u.ToString)
                                 End If
                                 If u.Scheme = "http" And u.IsAbsoluteUri Then
                                     u = New Uri(Replace(u.AbsoluteUri, "http://", "https://"))
-
+                                    AddLogEntry("ParseAttribute-4", LogLevel.Information, "Converted image link to https - " & u.ToString, u.ToString)
                                 End If
 
                             End If
@@ -563,15 +811,15 @@ Module Program
 
                                 locFile = "images/" & Replace(u.Segments(u.Segments.Length - 1), "/", "")
                                 locFile = System.Web.HttpUtility.UrlDecode(locFile)
-                                If Not File.Exists(locFile) And CheckImages Then
-                                    Client.DownloadFile(u.AbsoluteUri, outdir & "/" & locFile)
-
+                                If Not File.Exists(locFile) And settings.GetAppSetting("FetchImages", "true") = "true" Then
+                                    Client.DownloadFile(u.AbsoluteUri, OutputDirectory & "/" & locFile)
+                                    AddLogEntry("ParseAttribute-5", LogLevel.Information, "Downloaded image" & u.ToString, u.ToString)
                                 End If
                                 internal = True
 
                             Catch ex As Exception
                                 locFile = "images/404.jpg"
-                                Console.WriteLine(u.ToString)
+                                AddLogEntry("ParseAttribute-3", LogLevel.Error, "Unable to download image - " & ex.Message, u.ToString)
                                 internal = True
                             End Try
 
@@ -596,7 +844,7 @@ Module Program
                 Case "alt" ', "height", "width"
                     AddAttributeNode(ditaParent, Attribute.Name, Attribute.Value)
                 Case Else
-                    If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then Console.WriteLine("   Skipped attribute " & Attribute.Name)
+                    If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then AddLogEntry("ParseAttribute-4", LogLevel.Information, "   Skipped attribute " & Attribute.Name)
             End Select
         End If
     End Sub
@@ -617,7 +865,7 @@ Module Program
                 ParseNodes(node.ChildNodes, AddElementNode(DITADocument, ditaParent, "body"), DITADocument)
             Case "li"
                 If ditaParent.Name = "p" Then
-                    If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then Console.WriteLine("li within p in " & DITADocument.SelectSingleNode("/topic/title").InnerText)
+                    If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then AddLogEntry("ParseElementNode-1", LogLevel.Warning, "li within p in " & DITADocument.SelectSingleNode("/topic/title").InnerText)
 
                 End If
                 AddNodeAsIs(node, DITADocument, ditaParent)
@@ -649,7 +897,7 @@ Module Program
 
             Case "g"
 
-                If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then Console.WriteLine(ditaParent.SelectSingleNode("/topic/title").InnerText & " - Grammarly <g> tag switched to <ph> for " & node.InnerText)
+                If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then AddLogEntry("ParseElementNode-2", LogLevel.Warning, ditaParent.SelectSingleNode("/topic/title").InnerText & " - Grammarly <g> tag switched to <ph> for " & node.InnerText)
                 ParseTypographic(node, DITADocument, ditaParent)
 
                 'Figures etc
@@ -699,7 +947,9 @@ Module Program
                     Next
                 End If
                 AddAttributeNode(tgroup, "cols", ColCount.ToString)
-                Console.WriteLine("...Table generated with " & ColCount.ToString & "columns")
+                If settings.GetAppSetting("show-table-generation", "false") = "true" Then
+                    AddLogEntry("ParseElementNode-3", LogLevel.Information, "Table generated with " & ColCount.ToString & "columns")
+                End If
                 ' Anchor
             Case "a"
                 ' Pick up the element, then walk the attribuites to find the href
@@ -720,16 +970,15 @@ Module Program
                 ParseNodes(node.ChildNodes, s, DITADocument)
             Case "img"
                 Dim s As XmlNode = AddElementNode(DITADocument, ditaParent, "image")
+                AddAttributeNode(s, "placement", "break")
                 For Each a As HtmlAttribute In node.Attributes
                     ParseAttribute(a, DITADocument, s)
                 Next
 
-
             Case Else
-                If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then Console.WriteLine("Skipped " & node.Name)
+                If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then AddLogEntry("ParseElementNode-4", LogLevel.Information, "Skipped " & node.Name)
         End Select
     End Sub
-
     Private Function AddNodeAsIs(node As HtmlNode, DITADocument As XmlDocument, ditaParent As XmlNode) As XmlNode
         Dim s As XmlNode
 
@@ -751,15 +1000,6 @@ Module Program
         ParseNodes(node.ChildNodes, s, DITADocument)
         Return s
     End Function
-
-    Public Function NewDITAMap() As XmlDocument
-        Dim ditaMapDoc As New XmlDocument
-        ditaMapDoc.AppendChild(ditaMapDoc.CreateXmlDeclaration("1.0", "UTF-8", Nothing))
-        Dim docMapType As XmlDocumentType = ditaMapDoc.CreateDocumentType("map", "-//OASIS//DTD DITA Map//EN", "map.dtd", Nothing)
-        ditaMapDoc.AppendChild(docMapType)
-        Dim mapRoot As XmlElement = AddElementNode(ditaMapDoc, ditaMapDoc, "map")
-        Return (ditaMapDoc)
-    End Function
     Public Function NewTopic(PublishDate As Date) As XmlDocument
         Dim ditaDoc As New XmlDocument
         ditaDoc.AppendChild(ditaDoc.CreateXmlDeclaration("1.0", "UTF-8", Nothing))
@@ -777,7 +1017,6 @@ Module Program
         mapref.Attributes.Append(mapScope)
         Return mapref
     End Function
-
     Public Function AddElementNode(Document As XmlDocument, Parent As XmlNode, Name As String, Optional Position As ElementPositions = ElementPositions.AfterLast) As XmlNode
         Dim n As XmlElement = Document.CreateElement(Name)
         Select Case Position
@@ -795,12 +1034,6 @@ Module Program
         End Select
         Return n
     End Function
-    Public Enum ElementPositions
-        Beginning
-        AfterFirst
-        BeforeLast
-        AfterLast
-    End Enum
     Public Function AddElementNodeWithText(Document As XmlDocument, Parent As XmlNode, Name As String, Text As String, Optional Prepend As ElementPositions = ElementPositions.AfterLast) As XmlNode
         Dim n As XmlElement = AddElementNode(Document, Parent, Name, Prepend)
         Dim t As XmlText = Document.CreateTextNode(Text)
@@ -863,44 +1096,15 @@ Module Program
         End If
     End Function
 
-    Public Function ValidateXmlDocument(Document As XmlDocument, xsdFilePath As String) As Boolean
-        Document.Schemas.Add(Nothing, xsdFilePath)
-        Dim errorBuilder As New XmlValidationErrorBuilder()
-
-        Document.Validate(New ValidationEventHandler(AddressOf errorBuilder.ValidationEventHandler))
-        Dim errorsText As String = errorBuilder.GetErrors()
-        If errorsText IsNot Nothing Then
-            Return False
-        End If
-        Return True
-    End Function
     Public Class Style
         Property Name As String
         Property Count As Integer = 0
     End Class
-    Public Class XmlValidationErrorBuilder
-        Private _errors As New List(Of ValidationEventArgs)()
 
-        Public Sub ValidationEventHandler(ByVal sender As Object, ByVal args As ValidationEventArgs)
-            If args.Severity = XmlSeverityType.Error Then
-                _errors.Add(args)
-            End If
-        End Sub
-
-        Public Function GetErrors() As String
-            If _errors.Count <> 0 Then
-                Dim builder As New StringBuilder()
-                builder.Append("The following ")
-                builder.Append(_errors.Count.ToString())
-                builder.AppendLine(" error(s) were found while validating the XML document against the XSD:")
-                For Each i As ValidationEventArgs In _errors
-                    builder.Append("* ")
-                    builder.AppendLine(i.Message)
-                Next
-                Return builder.ToString()
-            Else
-                Return Nothing
-            End If
-        End Function
+    Public Class ClosureEntry
+        Property Ancestor As String
+        Property Descendant As String
+        Property Generations As Integer
+        Property Taxonomy As String
     End Class
 End Module

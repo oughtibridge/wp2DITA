@@ -20,6 +20,8 @@
               <xs:element name="post_name" msprop:Generator_ColumnVarNameInTable="columnpost_name" msprop:Generator_ColumnPropNameInRow="post_name" msprop:Generator_ColumnPropNameInTable="post_nameColumn" msprop:Generator_UserColumnName="post_name" type="xs:string" minOccurs="0" />
               <xs:element name="ID" msprop:Generator_ColumnVarNameInTable="columnID" msprop:Generator_ColumnPropNameInRow="ID" msprop:Generator_ColumnPropNameInTable="IDColumn" msprop:Generator_UserColumnName="ID" type="xs:unsignedLong" minOccurs="0" />
               <xs:element name="name" msprop:Generator_ColumnVarNameInTable="columnname" msprop:Generator_ColumnPropNameInRow="name" msprop:Generator_ColumnPropNameInTable="nameColumn" msprop:Generator_UserColumnName="name" type="xs:string" />
+              <xs:element name="post_type" msprop:Generator_ColumnVarNameInTable="columnpost_type" msprop:Generator_ColumnPropNameInRow="post_type" msprop:Generator_ColumnPropNameInTable="post_typeColumn" msprop:Generator_UserColumnName="post_type" type="xs:string" minOccurs="0" />
+              <xs:element name="post_date_gmt" msprop:Generator_ColumnVarNameInTable="columnpost_date_gmt" msprop:Generator_ColumnPropNameInRow="post_date_gmt" msprop:Generator_ColumnPropNameInTable="post_date_gmtColumn" msprop:Generator_UserColumnName="post_date_gmt" type="xs:dateTime" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

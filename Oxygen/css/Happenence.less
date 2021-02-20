@@ -46,8 +46,8 @@
 @font-face: {
     font-family: Lato;
     font-style: normal;
-    font-weight:bold;
-    src:url(lato-Black.ttf);
+    font-weight: bold;
+    src:url(Lato-Bold.ttf);
 };
 
 @font-face: {
@@ -72,8 +72,10 @@ body {
 }
 
 h2, h2.sectiontitle {
+    font-family: Lato;
   font-size: @HappenenceFontSize;
   font-weight: bold;
+  color:brown;
     line-height: @HappenenceLineSpacing;
     padding-top:1em;  
 }
@@ -117,6 +119,19 @@ figcaption {
     display: inline-block;
     width: auto;
     list-style: outside none none;
+}
+
+/* Override wordpress li for gallery of pictures */
+li.blocks-gallery-item {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.wp-block-gallery {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 /*  Blockquote and citation */
 blockquote {

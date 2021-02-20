@@ -62,6 +62,10 @@ ol, li {
     page-break-inside:avoid;
 }
 
+p {
+    orphans:5;
+}
+
 /*  Avoid page break in a figure and caption*/
 figure.fig {
     page-break-inside:avoid;
@@ -86,19 +90,20 @@ blockquote::after {
     position: absolute;
     right: -3px;
 }
+blockquote {
+    display:inline-block;
+}
 
 /* Clear the padding for a section */
 section.section {
   border: none;
   padding: 0em 0em 0em 0em;
   background-color: inherit;
-   page-break-inside:avoid;
-
+   page-break-inside: auto;
 }
 h2, h2.sectiontitle {
-      font-size: @HappenenceFontSize;
-  font-weight: bold;
-  color:fuchsia;
+    font-size: @HappenenceFontSize;
+    font-weight: bold;
     line-height: @HappenenceLineSpacing;
     padding-top:1em;  
 }

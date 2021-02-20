@@ -65,12 +65,13 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to SELECT wp_terms.slug, wp_terms.name, wp_term_taxonomy.taxonomy, wp_posts.post_name, wp_posts.ID, post_date_gmt
+        '''  Looks up a localized string similar to SELECT wp_terms.slug, wp_posts.post_type, wp_terms.name, wp_term_taxonomy.taxonomy, wp_posts.post_name, wp_posts.ID, post_date_gmt
         '''FROM   wp_term_relationships INNER JOIN
         '''             wp_term_taxonomy ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id INNER JOIN
         '''             wp_terms ON wp_term_taxonomy.term_id = wp_terms.term_id INNER JOIN
         '''             wp_posts ON wp_term_relationships.object_id = wp_posts.ID
-        '''ORDER BY wp_term_taxonomy.taxonomy, wp_terms.name, wp_posts.post_date.
+        '''WHERE wp_posts.post_status=&apos;publish&apos;
+        '''ORDER BY wp_term_taxonomy.ta [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property sqlCategories() As String
             Get
@@ -79,7 +80,23 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to SELECT ID, post_name, post_date, post_title, post_content FROM wp_posts WHERE post_author=1 and post_status=&apos;publish&apos;.
+        '''  Looks up a localized string similar to SELECT Parent.name AS Ancestor, Child.name AS Descendant, wp_term_taxonomy.taxonomy
+        '''FROM   wp_terms Child INNER JOIN
+        '''             wp_term_taxonomy ON Child.term_id = wp_term_taxonomy.term_id INNER JOIN
+        '''             wp_terms Parent ON wp_term_taxonomy.parent = Parent.term_id.
+        '''</summary>
+        Friend Shared ReadOnly Property sqlHierarchy() As String
+            Get
+                Return ResourceManager.GetString("sqlHierarchy", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to SELECT ID, post_name, post_date, post_title, post_content, post_type 
+        '''FROM wp_posts 
+        '''WHERE post_author=1 
+        '''and post_status=&apos;publish&apos;
+        '''order by post_date asc.
         '''</summary>
         Friend Shared ReadOnly Property sqlPosts() As String
             Get
