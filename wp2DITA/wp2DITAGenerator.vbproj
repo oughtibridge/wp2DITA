@@ -1,11 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>wp2DITA</RootNamespace>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>56cd0e4f-5eb5-403e-bd03-98345abc0350</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Program.vb" />
+    <Compile Remove="wp2DITA.Designer.vb" />
+    <Compile Remove="WP2DITA.vb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="wp2DITA.resx" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="wp2DITA.xpr" />
@@ -39,23 +49,23 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>dsPosts.xsd</DependentUpon>
     </Compile>
+    <Compile Update="Gen.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Gen.resx</DependentUpon>
+    </Compile>
     <Compile Update="wp2dita.cat.Designer.vb">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>wp2dita.cat.xsd</DependentUpon>
     </Compile>
-    <Compile Update="wp2DITA.Designer.vb">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>wp2DITA.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="wp2DITA.resx">
+    <EmbeddedResource Update="Gen.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>wp2DITA.Designer.vb</LastGenOutput>
+      <LastGenOutput>Gen.Designer.vb</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

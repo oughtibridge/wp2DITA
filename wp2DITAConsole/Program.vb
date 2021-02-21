@@ -1,12 +1,7 @@
 Imports wp2DITA.Generation
 Module Program
 
-    Public Enum ElementPositions
-        Beginning
-        AfterFirst
-        BeforeLast
-        AfterLast
-    End Enum
+
     Dim WithEvents Converter As New WP2DITAConverter
 
 
@@ -59,6 +54,6 @@ Module Program
     End Sub
 
     Private Sub WriteHelp()
-        Console.WriteLine(My.Resources.Gen.Syntax)
+        Console.WriteLine(My.Resources.wp2DITAConsole.Syntax)
     End Sub
 End Module
