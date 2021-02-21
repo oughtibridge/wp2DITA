@@ -184,7 +184,9 @@ Module Program
             If InStr(PostContent, "<p>") = 0 Then
                 OldPosts += 1
 
-                If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then AddLogEntry("Generate-3", LogLevel.Information, dr.post_title, dr.post_name)
+                If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then
+                    AddLogEntry("Generate-3", LogLevel.Information, dr.post_title, dr.post_name)
+                End If
                 PostContent = "<p>" & PostContent & "</p>"
 
                 ' Remove multiple linefeeds

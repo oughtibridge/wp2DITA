@@ -1,6 +1,20 @@
 @charset "utf-8";
 /*  Nicholas' customisation for Data Dictionary */
 /* Declare colours and charactaristics */
+/*  Import the fonts */
+/* latin-ext */
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  src: url(Fonts/Lato-Regular.ttf);
+}
+@font-face {
+  font-family: Lato;
+  font-style: bold;
+  font-weight: 700;
+  src: url(Fonts/Lato-Bold.ttf);
+}
 /* Happenence colours */
 /* 
  * Logo position - left hand side
@@ -10,6 +24,33 @@
  * Breadcrumbs font-size 16px line height 24px
  */
 /*  Fonts */
+/*
+@font-face: {
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    src:url(lato-regular.ttf);
+};
+@font-face: {
+    font-family: Lato;
+    font-style: normal;
+    font-weight: bold;
+    src:url(Lato-Bold.ttf);
+};
+
+@font-face: {
+    font-family: 'Fredericka the Great';
+    font-style: normal;
+    font-weight: 400;
+    src:url(FrederickatheGreat-Regular.ttf);
+};
+
+@font-face: {
+    font-family: 'Fredericka the Great';
+    font-style: normal;
+    font-weight: 700;
+    src:url(FrederickatheGreat-Regular.ttf);
+};*/
 body {
   background: #ffffff;
   font-family: Lato;
@@ -22,7 +63,7 @@ h2.sectiontitle {
   font-family: Lato;
   font-size: 12px;
   font-weight: bold;
-  color: brown;
+  color: #212121;
   line-height: 1.5em;
   padding-top: 1em;
 }
