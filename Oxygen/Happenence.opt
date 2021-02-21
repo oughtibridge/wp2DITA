@@ -19,25 +19,18 @@
             <parameter name="webhelp.show.main.page.toc" value="yes"/>
             <parameter name="webhelp.show.child.links" value="yes"/>
             <parameter name="webhelp.show.related.links" value="yes"/>
+            <parameter name="webhelp.show.top.menu" value="no"/>
             <parameter name="webhelp.top.menu.depth" value="1"/>
             <parameter name="args.figurelink.style" value="TITLE"/>
             <parameter name="figure.title.placement" value="bottom"/>
             <parameter name="args.tablelink.style" value="TITLE"/>
-            <parameter name="webhelp.fragment.before.toc_or_tiles"
-                value="page-templates/before_toc_or_tiles.xml" type="filePath"/>
-            <parameter name="webhelp.fragment.welcome" value="page-templates/welcome.xml"
-                type="filePath"/>
-            <parameter name="webhelp.fragment.header" value="page-templates/header.xml"
-                type="filePath"/>
-            <parameter name="webhelp.fragment.footer" value="page-templates/footer.xml"
-                type="filePath"/>
-            <!--  <parameter name="webhelp.fragment.head" value="page-templates/Analytics.xml" type="filePath"/>
--->
+
         </parameters>
         <resources>
             <css file="css/happenence.css"/>
-            <logo file="resources/images/NHS-Logo.svg" target-url="https://www.nhs.uk"
-                alt="National Health Service"/>
+            
+            <logo file="resources/Happenence.png" target-url="https://happenence.co.uk"
+                alt="Happenence"/>
             <favicon file="resources/images/favicon.ico"/>
             <fileset>
                 <include name="css/*.css"/>
@@ -57,9 +50,9 @@
     </webhelp>
     <pdf>
         <resources>
+            <css file="css/fonts.css" />
             <css file="css/happenence.css"/>
             <css file="css/happenence-print.css"/>
-            <css file="css/fonts.css" />
         </resources>
     </pdf>
 </publishing-template>

@@ -3,7 +3,20 @@
 /*  Nicholas' customisation for Data Dictionary */
 /* Declare colours and charactaristics */
 
-
+/*  Import the fonts */
+/* latin-ext */
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  src: url(Fonts/Lato-Regular.ttf) ;
+}
+@font-face {
+  font-family: Lato;
+  font-style: bold;
+  font-weight: 700;
+  src: url(Fonts/Lato-Bold.ttf) ;
+}
 /* Happenence colours */
 
 @HappenenceMain: #212121;
@@ -35,8 +48,9 @@
 /*  Fonts */
 @font-family: 'Fredericka the Great';
 @BodyFont: Lato;
+@HeadingFont: @BodyFont;
 @TitleFont: 'Fredericka the Great';
-
+/*
 @font-face: {
     font-family: Lato;
     font-style: normal;
@@ -62,7 +76,7 @@
     font-style: normal;
     font-weight: 700;
     src:url(FrederickatheGreat-Regular.ttf);
-};
+};*/
 body {
   background: @HappenenceBackground;
   font-family: @BodyFont;
@@ -72,15 +86,15 @@ body {
 }
 
 h2, h2.sectiontitle {
-    font-family: Lato;
+  font-family: @HeadingFont;
   font-size: @HappenenceFontSize;
   font-weight: bold;
-  color:brown;
-    line-height: @HappenenceLineSpacing;
-    padding-top:1em;  
+  color:@HappenenceMain;
+  line-height: @HappenenceLineSpacing;
+  padding-top:1em;  
 }
 h1.post-title {
-    font-family: Lato;
+    font-family: @HeadingFont;
     text-align: center;
     text-transform: none;
     line-height: 38px;
