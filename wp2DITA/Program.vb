@@ -7,8 +7,9 @@ Imports System.Xml
 Imports System.Net
 Imports wp2DITA.wp2DITA._CategoryEntries
 Imports System.Text
-
+Imports wp2DITA.wp2DITA
 Module Program
+    Dim Log As New wp2DITA.LogHandler
     Dim ID As Integer = 0
     Dim OldPosts As Integer = 0
     Dim logWriter As TextWriter
@@ -22,74 +23,16 @@ Module Program
     Dim CategoriesAdaptor As MySqlDataAdapter
     Dim dsCategories As CategoryEntriesDataTable
     Dim Closure As List(Of ClosureEntry)
-    Dim LogEntries As New List(Of LogEntry)
     Public Enum ElementPositions
         Beginning
         AfterFirst
         BeforeLast
         AfterLast
     End Enum
-    Public Enum LogLevel
-        Information
-        Warning
-        [Error]
-    End Enum
-    Public Class LogEntry
-        Public Property Level As LogLevel
-        Public Property LogMessage As String
-        Public Property LogURL As Uri
-        Public Property Time As DateTime
-
-    End Class
-    Public Sub AddLogEntry(Source As String, Level As LogLevel, Message As String, Optional URL As String = "")
-        Dim LE As New LogEntry With {
-            .Level = Level, .LogMessage = Message, .Time = Now()}
-        If URL <> "" Then
-            If Left(URL, 4) <> "http" Then
-                URL = "https://" & settings.GetAppSetting("host") & "/" & URL
-            End If
-            LE.LogURL = New Uri(URL)
-        End If
-        LogEntries.Add(LE)
-        Console.WriteLine(Now.ToString("yyyy-MMM-dd HH:mm:ss:fff") & " " & LE.LogMessage)
-    End Sub
-
-    Public Sub WriteLogHTML(LogEntries As List(Of LogEntry))
-        Dim entries = From le In LogEntries
-                      Order By le.Time, le.Level Descending, le.LogMessage
-                      Select le.Level, le.Time, le.LogURL, le.LogMessage
-        ' Load template
-        Dim template As String = settings.GetAppSetting("topic-template", "topic_template.html")
-        Dim TemplateText As String = File.ReadAllText(template)
 
 
-        Dim Body As String = "<table>" & vbCrLf
-        Body &= "<tr><th>Page</th><th>Message</th></tr>" & vbCrLf
-        For Each e In entries
-            Dim u As String
-            If Not IsNothing(e.LogURL) Then
-                u = "<a href=" & e.LogURL.ToString & ">" & e.Level.ToString & "</a>"
-            Else
-                u = e.Level.ToString
-            End If
-            Body &= "<tr><td>" & u & "</td><td>" & e.LogMessage & "</td></tr>" & vbCrLf
-        Next
-        Dim f As String = TemplateText
-        f = Replace(f, "${title}", "Errors")
-        f = Replace(f, "${body}", Body)
-        f = Replace(f, "${postdate}", Now.ToString("dd MMM yyyy HH:mm:ss"))
-        f = Replace(f, "${copyyear}", Now.ToString("yyyy"))
-        Dim htmlDoc = New HtmlDocument()
-        htmlDoc.OptionFixNestedTags = True
-        htmlDoc.OptionWriteEmptyNodes = True
-        htmlDoc.OptionOutputAsXml = False
-
-        htmlDoc.LoadHtml(f)
-        htmlDoc.Save(OutputDirectory & "\errors.htm")
-    End Sub
     Sub Main(args As String())
-
-        AddLogEntry("Main-1", LogLevel.Information, "Started")
+        Log.AddLogEntry("Main-1", LogLevel.Information, "Started")
         ' Set up the initial values for parameters
         Dim Help As Boolean = False
         If args.Count = 0 Then
@@ -111,11 +54,11 @@ Module Program
 
                     Case "generate", "g"
                         Generate()
-                        WriteLogHTML(LogEntries)
+                        Log.WriteLogHTML()
                     Case "help", "?"
                         Help = True
                     Case Else
-                        AddLogEntry("Main-2", LogLevel.Error, "Syntax error: " & s, "")
+                        Log.AddLogEntry("Main-2", LogLevel.Error, "Syntax error: " & s, "")
                         Help = True
                 End Select
             End If
@@ -144,9 +87,9 @@ Module Program
         Try
             conn.ConnectionString = myConnectionString
             conn.Open()
-            If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then AddLogEntry("Generate-1", LogLevel.Information, "Opened", "")
+            If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Log.AddLogEntry("Generate-1", LogLevel.Information, "Opened", "")
         Catch ex As MySql.Data.MySqlClient.MySqlException
-            AddLogEntry("Generate-2", LogLevel.Error, ex.Message, "")
+            Log.AddLogEntry("Generate-2", LogLevel.Error, ex.Message, "")
             Exit Sub
         End Try
 
@@ -171,7 +114,7 @@ Module Program
         If settings.GetAppSetting("GenerateQR", "False").ToLower = "true" Then GenerateQRImage(dsPosts)
 
         For Each dr As wp2DITA.PostsDataSet.PostsRow In dsPosts.Posts.Select(filter)
-            AddLogEntry("Generate", LogLevel.Information, "Starting topic:" & dr.post_name, dr.post_name)
+            Log.AddLogEntry("Generate", LogLevel.Information, "Starting topic:" & dr.post_name, dr.post_name)
             Dim htmlOut As String = OutputDirectory & "\" & dr.post_name & ".html"
             Dim ditaOut As String = OutputDirectory & "\" & dr.post_name & ".dita"
             Dim ditaoutRef As String = dr.post_name & ".dita"
@@ -185,7 +128,7 @@ Module Program
                 OldPosts += 1
 
                 If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then
-                    AddLogEntry("Generate-3", LogLevel.Information, dr.post_title, dr.post_name)
+                    Log.AddLogEntry("Generate-3", LogLevel.Information, dr.post_title, dr.post_name)
                 End If
                 PostContent = "<p>" & PostContent & "</p>"
 
@@ -307,14 +250,14 @@ Module Program
             writer.Formatting = Formatting.Indented
             ditaDoc.Save(writer)
             writer.Close()
-            AddLogEntry("Generate", LogLevel.Information, "Completed topic:" & dr.post_name, dr.post_name)
+            Log.AddLogEntry("Generate", LogLevel.Information, "Completed topic:" & dr.post_name, dr.post_name)
 
         Next
         ditaMapDoc.Save(OutputDirectory & "\map.ditamap")
 
         WriteStyes(Styles)
 
-        If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then AddLogEntry("Generate-4", LogLevel.Information, "There are " & OldPosts.ToString & " posts in the old format")
+        If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then Log.AddLogEntry("Generate-4", LogLevel.Information, "There are " & OldPosts.ToString & " posts in the old format")
 
         conn.Close()
         Client.Dispose()
@@ -332,7 +275,7 @@ Module Program
     End Sub
 
     Private Function BuildClosure(Conn As MySqlConnection) As List(Of ClosureEntry)
-        AddLogEntry("BuildClosure", LogLevel.Information, "Building closure", "")
+        Log.AddLogEntry("BuildClosure", LogLevel.Information, "Building closure", "")
         Dim Result As New List(Of ClosureEntry)
 
         Dim strSql As String = My.Resources.wp2DITA.sqlHierarchy
@@ -379,7 +322,7 @@ Module Program
             Generation += 1
         End While
 
-        AddLogEntry("BuildClosure", LogLevel.Information, "Built closure", "")
+        Log.AddLogEntry("BuildClosure", LogLevel.Information, "Built closure", "")
         Return Result
     End Function
 
@@ -420,7 +363,7 @@ Module Program
             If Not drEntry.IsParent_nameNull Then
                 If drEntry.Grandparent_id = ParentID Then
                     If drEntry.taxonomy <> LastTax Then
-                        If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then AddLogEntry("CreateCategoryHierarchy", LogLevel.Information, "Hierarchy " & drEntry.taxonomy)
+                        If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Log.AddLogEntry("CreateCategoryHierarchy", LogLevel.Information, "Hierarchy " & drEntry.taxonomy)
                         If LastTax <> "zzz" Then
 
                             ' close last map
@@ -736,12 +679,12 @@ Module Program
                             s = AddElementNode(ditaDocument, ditaParent.LastChild, ditaTag)
                         Case Else
                             s = AddElementNode(ditaDocument, ditaParent, ditaTag)
-                            If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then AddLogEntry("ParseTypographic-1", LogLevel.Warning, "Invalid " & ditaTag & " tag created from " & node.Name)
+                            If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then Log.AddLogEntry("ParseTypographic-1", LogLevel.Warning, "Invalid " & ditaTag & " tag created from " & node.Name)
                     End Select
                 Else
                     Dim p As XmlElement = AddElementNode(ditaDocument, ditaParent, "bodydiv")
                     s = AddElementNode(ditaDocument, p, ditaTag)
-                    If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then AddLogEntry("ParseTypographic-2", LogLevel.Information, "bodydiv used to wrap " & ditaTag & " tag created from " & node.Name)
+                    If settings.GetAppSetting("show-html-error", "false").ToLower = "true" Then Log.AddLogEntry("ParseTypographic-2", LogLevel.Information, "bodydiv used to wrap " & ditaTag & " tag created from " & node.Name)
                 End If
         End Select
         AddAttributeNode(s, "outputclass", "html-" & node.Name)
@@ -798,13 +741,13 @@ Module Program
                                     Dim lep As String = ditaParent.SelectSingleNode("/topic/title").InnerText
                                     If lep <> LastErrorPage Then
                                         LastErrorPage = lep
-                                        AddLogEntry("ParseAttribute-1", LogLevel.Information, LastErrorPage)
+                                        Log.AddLogEntry("ParseAttribute-1", LogLevel.Information, LastErrorPage)
                                     End If
-                                    AddLogEntry("ParseAttribute-2", LogLevel.Warning, "Insecure image - " & u.ToString, u.ToString)
+                                    Log.AddLogEntry("ParseAttribute-2", LogLevel.Warning, "Insecure image - " & u.ToString, u.ToString)
                                 End If
                                 If u.Scheme = "http" And u.IsAbsoluteUri Then
                                     u = New Uri(Replace(u.AbsoluteUri, "http://", "https://"))
-                                    AddLogEntry("ParseAttribute-4", LogLevel.Information, "Converted image link to https - " & u.ToString, u.ToString)
+                                    Log.AddLogEntry("ParseAttribute-4", LogLevel.Information, "Converted image link to https - " & u.ToString, u.ToString)
                                 End If
 
                             End If
@@ -815,13 +758,13 @@ Module Program
                                 locFile = System.Web.HttpUtility.UrlDecode(locFile)
                                 If Not File.Exists(locFile) And settings.GetAppSetting("FetchImages", "true") = "true" Then
                                     Client.DownloadFile(u.AbsoluteUri, OutputDirectory & "/" & locFile)
-                                    AddLogEntry("ParseAttribute-5", LogLevel.Information, "Downloaded image" & u.ToString, u.ToString)
+                                    Log.AddLogEntry("ParseAttribute-5", LogLevel.Information, "Downloaded image" & u.ToString, u.ToString)
                                 End If
                                 internal = True
 
                             Catch ex As Exception
                                 locFile = "images/404.jpg"
-                                AddLogEntry("ParseAttribute-3", LogLevel.Error, "Unable to download image - " & ex.Message, u.ToString)
+                                Log.AddLogEntry("ParseAttribute-3", LogLevel.Error, "Unable to download image - " & ex.Message, u.ToString)
                                 internal = True
                             End Try
 
@@ -846,7 +789,7 @@ Module Program
                 Case "alt" ', "height", "width"
                     AddAttributeNode(ditaParent, Attribute.Name, Attribute.Value)
                 Case Else
-                    If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then AddLogEntry("ParseAttribute-4", LogLevel.Information, "   Skipped attribute " & Attribute.Name)
+                    If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then Log.AddLogEntry("ParseAttribute-4", LogLevel.Information, "   Skipped attribute " & Attribute.Name)
             End Select
         End If
     End Sub
@@ -867,7 +810,7 @@ Module Program
                 ParseNodes(node.ChildNodes, AddElementNode(DITADocument, ditaParent, "body"), DITADocument)
             Case "li"
                 If ditaParent.Name = "p" Then
-                    If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then AddLogEntry("ParseElementNode-1", LogLevel.Warning, "li within p in " & DITADocument.SelectSingleNode("/topic/title").InnerText)
+                    If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then Log.AddLogEntry("ParseElementNode-1", LogLevel.Warning, "li within p in " & DITADocument.SelectSingleNode("/topic/title").InnerText)
 
                 End If
                 AddNodeAsIs(node, DITADocument, ditaParent)
@@ -899,7 +842,7 @@ Module Program
 
             Case "g"
 
-                If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then AddLogEntry("ParseElementNode-2", LogLevel.Warning, ditaParent.SelectSingleNode("/topic/title").InnerText & " - Grammarly <g> tag switched to <ph> for " & node.InnerText)
+                If settings.GetAppSetting("show-html-errors", "true").ToLower = "true" Then Log.AddLogEntry("ParseElementNode-2", LogLevel.Warning, ditaParent.SelectSingleNode("/topic/title").InnerText & " - Grammarly <g> tag switched to <ph> for " & node.InnerText)
                 ParseTypographic(node, DITADocument, ditaParent)
 
                 'Figures etc
@@ -950,7 +893,7 @@ Module Program
                 End If
                 AddAttributeNode(tgroup, "cols", ColCount.ToString)
                 If settings.GetAppSetting("show-table-generation", "false") = "true" Then
-                    AddLogEntry("ParseElementNode-3", LogLevel.Information, "Table generated with " & ColCount.ToString & "columns")
+                    Log.AddLogEntry("ParseElementNode-3", LogLevel.Information, "Table generated with " & ColCount.ToString & "columns")
                 End If
                 ' Anchor
             Case "a"
@@ -978,7 +921,7 @@ Module Program
                 Next
 
             Case Else
-                If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then AddLogEntry("ParseElementNode-4", LogLevel.Information, "Skipped " & node.Name)
+                If settings.GetAppSetting("show-skipped", "false").ToLower = "true" Then Log.AddLogEntry("ParseElementNode-4", LogLevel.Information, "Skipped " & node.Name)
         End Select
     End Sub
     Private Function AddNodeAsIs(node As HtmlNode, DITADocument As XmlDocument, ditaParent As XmlNode) As XmlNode
