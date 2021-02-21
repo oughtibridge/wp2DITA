@@ -19,10 +19,21 @@ body {
 }
 h2,
 h2.sectiontitle {
+  font-family: Lato;
   font-size: 12px;
   font-weight: bold;
+  color: brown;
   line-height: 1.5em;
   padding-top: 1em;
+}
+h1.post-title {
+  font-family: Lato;
+  text-align: center;
+  text-transform: none;
+  line-height: 38px;
+  letter-spacing: 0px;
+  font-size: 24px;
+  font-display: swap;
 }
 /* Tiles */
 /* Page colours */
@@ -42,6 +53,26 @@ figcaption {
   font-size: calc(8px);
   line-height: 1.5em;
   text-align: center;
+}
+/* Categories as inline lists */
+.wp2dita-category-list {
+  padding: 0px;
+}
+.wp2dita-category-item {
+  display: inline-block;
+  width: auto;
+  list-style: outside none none;
+}
+/* Override wordpress li for gallery of pictures */
+li.blocks-gallery-item {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ul.wp-block-gallery {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 /*  Blockquote and citation */
 blockquote {

@@ -118,16 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="sqlCategories" xml:space="preserve">
-    <value>SELECT wp_terms.slug, wp_terms.name, wp_term_taxonomy.taxonomy, wp_posts.post_name, wp_posts.ID, post_date_gmt
+    <value>SELECT wp_terms.slug, wp_posts.post_type, wp_terms.name, wp_term_taxonomy.taxonomy, wp_posts.post_name, wp_posts.ID, post_date_gmt
 FROM   wp_term_relationships INNER JOIN
              wp_term_taxonomy ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id INNER JOIN
              wp_terms ON wp_term_taxonomy.term_id = wp_terms.term_id INNER JOIN
              wp_posts ON wp_term_relationships.object_id = wp_posts.ID
+WHERE wp_posts.post_status='publish'
 ORDER BY wp_term_taxonomy.taxonomy, wp_terms.name, wp_posts.post_date</value>
     <comment>SQL to load hierarchies</comment>
   </data>
+  <data name="sqlHierarchy" xml:space="preserve">
+    <value>SELECT Parent.name AS Ancestor, Child.name AS Descendant, wp_term_taxonomy.taxonomy
+FROM   wp_terms Child INNER JOIN
+             wp_term_taxonomy ON Child.term_id = wp_term_taxonomy.term_id INNER JOIN
+             wp_terms Parent ON wp_term_taxonomy.parent = Parent.term_id</value>
+  </data>
   <data name="sqlPosts" xml:space="preserve">
-    <value>SELECT ID, post_name, post_date, post_title, post_content FROM wp_posts WHERE post_author=1 and post_status='publish'</value>
+    <value>SELECT ID, post_name, post_date, post_title, post_content, post_type 
+FROM wp_posts 
+WHERE post_author=1 
+and post_status='publish'
+order by post_date asc</value>
     <comment>SQL to load all the posts</comment>
   </data>
   <data name="sqlTaxomony" xml:space="preserve">
@@ -156,8 +167,8 @@ output-directory - local file directory to store the generated DITA files
 topic-template - path to empty HTML page as a template
 bookmap-template - path to empty DITA bookmap as a template
 log-file - location of the output log file
-generateqr - true to generate QR codes for each Wordpress article
 
+Metadata settings
 copyright - The copyright holder
 publisher - The publisher of generated products
 author - The default author if not specified
@@ -168,6 +179,9 @@ show-classic-editor=true - list pages using the wordpress classic editor.  It is
 show-skipped=true - details of skipped html elements and attributes
 show-html-errors=true - Identifies html errors
 show-http-errors=true - Identifies errors connecting to http resources especially images
+
+fetchimages=true - Downloads any missing images; this will slow generation down slightly
+generateqr=true to generate QR codes for each Wordpress article
 
 Examples:
 wp2DITA list

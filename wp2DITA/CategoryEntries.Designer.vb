@@ -295,6 +295,10 @@ Namespace wp2DITA
             
             Private columnname As Global.System.Data.DataColumn
             
+            Private columnpost_type As Global.System.Data.DataColumn
+            
+            Private columnpost_date_gmt As Global.System.Data.DataColumn
+            
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
             Public Sub New()
@@ -371,6 +375,22 @@ Namespace wp2DITA
             End Property
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public ReadOnly Property post_typeColumn() As Global.System.Data.DataColumn
+                Get
+                    Return Me.columnpost_type
+                End Get
+            End Property
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public ReadOnly Property post_date_gmtColumn() As Global.System.Data.DataColumn
+                Get
+                    Return Me.columnpost_date_gmt
+                End Get
+            End Property
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0"),  _
              Global.System.ComponentModel.Browsable(false)>  _
             Public ReadOnly Property Count() As Integer
@@ -407,9 +427,9 @@ Namespace wp2DITA
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
-            Public Overloads Function AddCategoryEntriesRow(ByVal slug As String, ByVal taxonomy As String, ByVal post_name As String, ByVal ID As ULong, ByVal name As String) As CategoryEntriesRow
+            Public Overloads Function AddCategoryEntriesRow(ByVal slug As String, ByVal taxonomy As String, ByVal post_name As String, ByVal ID As ULong, ByVal name As String, ByVal post_type As String, ByVal post_date_gmt As Date) As CategoryEntriesRow
                 Dim rowCategoryEntriesRow As CategoryEntriesRow = CType(Me.NewRow,CategoryEntriesRow)
-                Dim columnValuesArray() As Object = New Object() {slug, taxonomy, post_name, ID, name}
+                Dim columnValuesArray() As Object = New Object() {slug, taxonomy, post_name, ID, name, post_type, post_date_gmt}
                 rowCategoryEntriesRow.ItemArray = columnValuesArray
                 Me.Rows.Add(rowCategoryEntriesRow)
                 Return rowCategoryEntriesRow
@@ -437,6 +457,8 @@ Namespace wp2DITA
                 Me.columnpost_name = MyBase.Columns("post_name")
                 Me.columnID = MyBase.Columns("ID")
                 Me.columnname = MyBase.Columns("name")
+                Me.columnpost_type = MyBase.Columns("post_type")
+                Me.columnpost_date_gmt = MyBase.Columns("post_date_gmt")
             End Sub
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -452,6 +474,10 @@ Namespace wp2DITA
                 MyBase.Columns.Add(Me.columnID)
                 Me.columnname = New Global.System.Data.DataColumn("name", GetType(String), Nothing, Global.System.Data.MappingType.Element)
                 MyBase.Columns.Add(Me.columnname)
+                Me.columnpost_type = New Global.System.Data.DataColumn("post_type", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+                MyBase.Columns.Add(Me.columnpost_type)
+                Me.columnpost_date_gmt = New Global.System.Data.DataColumn("post_date_gmt", GetType(Date), Nothing, Global.System.Data.MappingType.Element)
+                MyBase.Columns.Add(Me.columnpost_date_gmt)
                 Me.columnname.AllowDBNull = false
             End Sub
             
@@ -670,6 +696,36 @@ Namespace wp2DITA
             
             <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Property post_type() As String
+                Get
+                    Try 
+                        Return CType(Me(Me.tableCategoryEntries.post_typeColumn),String)
+                    Catch e As Global.System.InvalidCastException
+                        Throw New Global.System.Data.StrongTypingException("The value for column 'post_type' in table 'CategoryEntries' is DBNull.", e)
+                    End Try
+                End Get
+                Set
+                    Me(Me.tableCategoryEntries.post_typeColumn) = value
+                End Set
+            End Property
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Property post_date_gmt() As Date
+                Get
+                    Try 
+                        Return CType(Me(Me.tableCategoryEntries.post_date_gmtColumn),Date)
+                    Catch e As Global.System.InvalidCastException
+                        Throw New Global.System.Data.StrongTypingException("The value for column 'post_date_gmt' in table 'CategoryEntries' is DBNull.", e)
+                    End Try
+                End Get
+                Set
+                    Me(Me.tableCategoryEntries.post_date_gmtColumn) = value
+                End Set
+            End Property
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
             Public Function IsslugNull() As Boolean
                 Return Me.IsNull(Me.tableCategoryEntries.slugColumn)
             End Function
@@ -714,6 +770,30 @@ Namespace wp2DITA
              Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
             Public Sub SetIDNull()
                 Me(Me.tableCategoryEntries.IDColumn) = Global.System.Convert.DBNull
+            End Sub
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Function Ispost_typeNull() As Boolean
+                Return Me.IsNull(Me.tableCategoryEntries.post_typeColumn)
+            End Function
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Sub Setpost_typeNull()
+                Me(Me.tableCategoryEntries.post_typeColumn) = Global.System.Convert.DBNull
+            End Sub
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Function Ispost_date_gmtNull() As Boolean
+                Return Me.IsNull(Me.tableCategoryEntries.post_date_gmtColumn)
+            End Function
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+             Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")>  _
+            Public Sub Setpost_date_gmtNull()
+                Me(Me.tableCategoryEntries.post_date_gmtColumn) = Global.System.Convert.DBNull
             End Sub
         End Class
         
