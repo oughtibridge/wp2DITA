@@ -25,7 +25,7 @@ Namespace My.Resources
     <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>  _
-    Friend Class wp2DITA
+    Public Class wp2DITA
         
         Private Shared resourceMan As Global.System.Resources.ResourceManager
         
@@ -40,7 +40,7 @@ Namespace My.Resources
         '''  Returns the cached ResourceManager instance used by this class.
         '''</summary>
         <Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
-        Friend Shared ReadOnly Property ResourceManager() As Global.System.Resources.ResourceManager
+        Public Shared ReadOnly Property ResourceManager() As Global.System.Resources.ResourceManager
             Get
                 If Object.ReferenceEquals(resourceMan, Nothing) Then
                     Dim temp As Global.System.Resources.ResourceManager = New Global.System.Resources.ResourceManager("wp2DITA.wp2DITA", GetType(wp2DITA).Assembly)
@@ -55,7 +55,7 @@ Namespace My.Resources
         '''  resource lookups using this strongly typed resource class.
         '''</summary>
         <Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
-        Friend Shared Property Culture() As Global.System.Globalization.CultureInfo
+        Public Shared Property Culture() As Global.System.Globalization.CultureInfo
             Get
                 Return resourceCulture
             End Get
@@ -73,7 +73,7 @@ Namespace My.Resources
         '''WHERE wp_posts.post_status=&apos;publish&apos;
         '''ORDER BY wp_term_taxonomy.ta [rest of string was truncated]&quot;;.
         '''</summary>
-        Friend Shared ReadOnly Property sqlCategories() As String
+        Public Shared ReadOnly Property sqlCategories() As String
             Get
                 Return ResourceManager.GetString("sqlCategories", resourceCulture)
             End Get
@@ -85,7 +85,7 @@ Namespace My.Resources
         '''             wp_term_taxonomy ON Child.term_id = wp_term_taxonomy.term_id INNER JOIN
         '''             wp_terms Parent ON wp_term_taxonomy.parent = Parent.term_id.
         '''</summary>
-        Friend Shared ReadOnly Property sqlHierarchy() As String
+        Public Shared ReadOnly Property sqlHierarchy() As String
             Get
                 Return ResourceManager.GetString("sqlHierarchy", resourceCulture)
             End Get
@@ -98,7 +98,7 @@ Namespace My.Resources
         '''and post_status=&apos;publish&apos;
         '''order by post_date asc.
         '''</summary>
-        Friend Shared ReadOnly Property sqlPosts() As String
+        Public Shared ReadOnly Property sqlPosts() As String
             Get
                 Return ResourceManager.GetString("sqlPosts", resourceCulture)
             End Get
@@ -111,7 +111,7 @@ Namespace My.Resources
         '''             wp_terms INNER JOIN
         '''             wp_term_taxonomy child_term_taxonomy ON child_term_taxonomy.term_id = wp_terms.term_i [rest of string was truncated]&quot;;.
         '''</summary>
-        Friend Shared ReadOnly Property sqlTaxomony() As String
+        Public Shared ReadOnly Property sqlTaxomony() As String
             Get
                 Return ResourceManager.GetString("sqlTaxomony", resourceCulture)
             End Get
@@ -132,7 +132,7 @@ Namespace My.Resources
         '''
         '''output-directory - local file directory to store the generated D [rest of string was truncated]&quot;;.
         '''</summary>
-        Friend Shared ReadOnly Property Syntax() As String
+        Public Shared ReadOnly Property Syntax() As String
             Get
                 Return ResourceManager.GetString("Syntax", resourceCulture)
             End Get
