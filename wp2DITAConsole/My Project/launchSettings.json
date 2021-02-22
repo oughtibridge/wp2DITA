@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "wp2DITAConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "generate"
+    }
+  }
+}

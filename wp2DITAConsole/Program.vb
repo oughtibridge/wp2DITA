@@ -7,13 +7,15 @@ Module Program
 
     Sub Main(args As String())
         Converter.Log = New LogHandler
-        Converter.Log.AddLogEntry("Main-1", LogLevel.Information, "Started")
+
         ' Set up the initial values for parameters
 
         ' Get the configuration
-        Dim settings As New ApplicationSettings.Settings.ApplicationSettings("wp2DITA")
-
-
+        Dim settings As New ApplicationSettings.Settings.ApplicationSettings("wp2DITA", My.Resources.wp2DITAConsole.SettingsModel)
+        If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Converter.Log.AddLogEntry("Main-1", LogLevel.Information, "Started")
+        If Not settings.ValidSettings Then
+            Throw New DataMisalignedException
+        End If
         Dim Help As Boolean = False
         If args.Count = 0 Then
             Help = True
@@ -31,7 +33,8 @@ Module Program
                         For Each appS In settings.GetAllAppSettings
                             Console.WriteLine(appS.Name & "=" & appS.Value)
                         Next
-
+                    Case "show-settings-model", "sm"
+                        Console.WriteLine(settings.Model.ToString)
                     Case "generate", "g"
 
                         Converter.Generate()

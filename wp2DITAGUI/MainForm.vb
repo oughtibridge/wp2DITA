@@ -1,5 +1,6 @@
 ﻿Public Class MainForm
-    Public Settings As New ApplicationSettings.Settings.ApplicationSettings("wp2DITA")
+    Dim SettingsModel As String = My.Resources.wp2DITAGUI.SettingsModel
+    Public Settings As New ApplicationSettings.Settings.ApplicationSettings("wp2DITA", SettingsModel)
     Dim WithEvents Generator As New wp2DITA.Generation.WP2DITAConverter
     Private Sub cmdGo_Click(sender As Object, e As EventArgs) Handles cmdGo.Click
         Generator.settings = Settings
@@ -21,6 +22,6 @@
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         AddHandler Generator.ProgressChanged, AddressOf ProgressUpdated
         AddHandler Generator.LogEntered, AddressOf LogEntered
-
+        CtlSettings1.SetSettings(Settings)
     End Sub
 End Class

@@ -148,7 +148,7 @@ Namespace Generation
                 DocSet = New wp2DITADocumentSet(settings, dr.post_title, dr.post_content, dr.post_date)
                 DocSet.ID = dr.ID
 
-                Log.AddLogEntry("Generate", LogLevel.Information, "Starting topic:" & dr.post_name, dr.post_name)
+                If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Log.AddLogEntry("Generate", LogLevel.Information, "Starting topic:" & dr.post_name, dr.post_name)
                 Dim htmlOut As String = DocSet.OutputDirectory & "\" & dr.post_name & ".html"
                 Dim ditaOut As String = DocSet.OutputDirectory & "\" & dr.post_name & ".dita"
                 Dim ditaoutRef As String = dr.post_name & ".dita"
@@ -270,7 +270,7 @@ Namespace Generation
                 writer.Formatting = Formatting.Indented
                 DocSet.DITADocument.Save(writer)
                 writer.Close()
-                Log.AddLogEntry("Generate", LogLevel.Information, "Completed topic:" & dr.post_name, dr.post_name)
+                If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Log.AddLogEntry("Generate", LogLevel.Information, "Completed topic:" & dr.post_name, dr.post_name)
                 Progress.Completed += 1
                 RaiseEvent ProgressChanged(Progress)
             Next
@@ -299,7 +299,7 @@ Namespace Generation
         End Sub
 
         Private Function BuildClosure(Conn As MySqlConnection) As List(Of ClosureEntry)
-            Log.AddLogEntry("BuildClosure", LogLevel.Information, "Building closure", "")
+            If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Log.AddLogEntry("BuildClosure", LogLevel.Information, "Building closure", "")
             Dim Result As New List(Of ClosureEntry)
 
             Dim strSql As String = My.Resources.Gen.sqlHierarchy
@@ -346,7 +346,7 @@ Namespace Generation
                 Generation += 1
             End While
 
-            Log.AddLogEntry("BuildClosure", LogLevel.Information, "Built closure", "")
+            If settings.GetAppSetting("show-progress", "false").ToLower = "true" Then Log.AddLogEntry("BuildClosure", LogLevel.Information, "Built closure", "")
             Return Result
         End Function
 
@@ -751,7 +751,13 @@ Namespace Generation
                         End If
                     Case "src"
                         Dim internal As Boolean = False
-                        Dim u As New Uri(Attribute.Value)
+                        Dim u As Uri
+                        Try
+                            u = New Uri(Attribute.Value)
+                        Catch ex As Exception
+                            Log.AddLogEntry("ParseAttribute-6", LogLevel.Warning, "Invalid URL for image")
+                            Exit Select
+                        End Try
                         Dim locFile As String = ""
 
                         '

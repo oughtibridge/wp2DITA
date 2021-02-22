@@ -25,7 +25,7 @@ Namespace My.Resources
     <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>  _
-    Friend Class wp2DITAConsole
+    Friend Class wp2DITAGUI
         
         Private Shared resourceMan As Global.System.Resources.ResourceManager
         
@@ -43,7 +43,7 @@ Namespace My.Resources
         Friend Shared ReadOnly Property ResourceManager() As Global.System.Resources.ResourceManager
             Get
                 If Object.ReferenceEquals(resourceMan, Nothing) Then
-                    Dim temp As Global.System.Resources.ResourceManager = New Global.System.Resources.ResourceManager("wp2DITAConsole.wp2DITAConsole", GetType(wp2DITAConsole).Assembly)
+                    Dim temp As Global.System.Resources.ResourceManager = New Global.System.Resources.ResourceManager("wp2DITAGUI.wp2DITAGUI", GetType(wp2DITAGUI).Assembly)
                     resourceMan = temp
                 End If
                 Return resourceMan
@@ -75,27 +75,6 @@ Namespace My.Resources
         Friend Shared ReadOnly Property SettingsModel() As String
             Get
                 Return ResourceManager.GetString("SettingsModel", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Syntax:
-        '''wp2dita [list] [generate] [help] ([parameter=value])
-        '''list - provides the list of currently used parameters
-        '''generate - executes the conversion based on the stored parameters
-        '''help|? - shows this help
-        '''
-        '''The operations above can optionally be preceded by - or /, e.g. -? or /generate
-        '''
-        '''Parameters:
-        '''connection-string - database connections string for the mySQL database hosting Wordpress
-        '''host - DNS host name of the wordpress website
-        '''
-        '''output-directory - local file directory to store the generated D [rest of string was truncated]&quot;;.
-        '''</summary>
-        Friend Shared ReadOnly Property Syntax() As String
-            Get
-                Return ResourceManager.GetString("Syntax", resourceCulture)
             End Get
         End Property
     End Class
