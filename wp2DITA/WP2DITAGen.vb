@@ -162,7 +162,7 @@ Namespace Generation
                     OldPosts += 1
 
                     If settings.GetAppSetting("show-classic-editor", "false").ToLower = "true" Then
-                        Log.AddLogEntry("Generate-3", LogLevel.Information, dr.post_title, dr.post_name)
+                        Log.AddLogEntry("Generate-3", LogLevel.Information, "Classic editor used for '" & dr.post_title & "'", dr.post_name)
                     End If
                     PostContent = "<p>" & PostContent & "</p>"
 
@@ -1100,7 +1100,7 @@ Namespace Generation
 
         Public Sub AddLogEntry(Source As String, Level As LogLevel, Message As String, Optional URL As String = "")
             Dim LE As New LogEntry With {
-                .Level = Level, .LogMessage = Message, .Time = Now()}
+                .Source = Source, .Level = Level, .LogMessage = Message, .Time = Now()}
             If URL <> "" Then
                 If Left(URL, 4) <> "http" Then
                     URL = "https://" & Settings.GetAppSetting("host") & "/" & URL
@@ -1148,6 +1148,7 @@ Namespace Generation
         End Sub
 
         Public Class LogEntry
+            Public Property Source As String
             Public Property Level As LogLevel
             Public Property LogMessage As String
             Public Property LogURL As Uri

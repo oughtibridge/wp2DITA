@@ -138,6 +138,7 @@ FROM   wp_terms Child INNER JOIN
 FROM wp_posts 
 WHERE post_author=1 
 and post_status='publish'
+and post_type in ('post')
 order by post_date asc</value>
     <comment>SQL to load all the posts</comment>
   </data>

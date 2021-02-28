@@ -96,6 +96,7 @@ Namespace My.Resources
         '''FROM wp_posts 
         '''WHERE post_author=1 
         '''and post_status=&apos;publish&apos;
+        '''and post_type in (&apos;post&apos;)
         '''order by post_date asc.
         '''</summary>
         Friend Shared ReadOnly Property sqlPosts() As String

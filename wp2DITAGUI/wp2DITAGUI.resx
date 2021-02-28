@@ -118,24 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SettingsModel" xml:space="preserve">
-    <value>connection-string	StringSetting	Database connection		database connections string for the mySQL database hosting Wordpress
+    <value>Heading1	Heading	Wordpress server		database connections string for the server 
+connection-string	MultilineStringSetting	Database connection		database connections string for the mySQL database hosting Wordpress
 host	StringSetting	Database sever		DNS host name of the wordpress website
-output-directory	FilePathSetting	Output Directory		local file directory to store the generated DITA files
+Heading2	Heading	File locations		Locations for key files
+output-directory	FolderPathSetting	Output Directory		local file directory to store the generated DITA files
 topic-template	FilePathSetting	Topic template file		path to empty HTML page as a template
 bookmap-template	FilePathSetting	Bookmap template file		path to empty DITA bookmap as a template
 log-file	FilePathSetting	Log file		location of the output log file
+Heading3	Heading	Key metadata		Copyright holder, publisher and author
 copyright	StringSetting	Copyright holder		The copyright holder
 publisher	StringSetting	Publisher		The publisher of generated products
 author	StringSetting	Author		The default author if not specified
+Heading4	Heading	Heading labels for categories and date published	
 category-list-heading	StringSetting	Category heading		"The heading text for the list of categories, locations and tags"
 published-heading	StringSetting	Published date heading		The heading text for the date published
+Heading5	Heading	Event reporting		Key events to report
 show-progress	BooleanSetting	Report progress		provide details of the steps being undertaken
 show-classic-editor	BooleanSetting	Warn if classic editor		list pages using the wordpress classic editor.  It is recommended these are converted
 show-skipped	BooleanSetting	Report skipped HTML tags		details of skipped html elements and attributes
-show-html-errors	BooleanSetting	Report HTML errors		Identifies html errors
 show-table-generation	BooleanSetting	Report tables generated		Reports when tables are being converted
-purge-empty-paragraphs	BooleanSetting	Remove empty paragraphs		Removes paragraphs with no content
 show-http-errors	BooleanSetting	Report http errors		Identifies errors connecting to http resources especially images
+show-html-errors	BooleanSetting	Report HTML errors		Identifies html errors
+Heading6	Heading	Options		
+purge-empty-paragraphs	BooleanSetting	Remove empty paragraphs		Removes paragraphs with no content
 FetchImages	BooleanSetting	Download images		Downloads any missing images; this will slow generation down slightly
 GenerateQR	BooleanSetting	Generate QR codes		true to generate QR codes for each Wordpress article</value>
   </data>

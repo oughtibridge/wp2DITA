@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <RootNamespace>wp2DITAGUI</RootNamespace>
-    <StartupObject>wp2DITAGUI.MainForm</StartupObject>
+    <RootNamespace>ApplicationSettingsGUI</RootNamespace>
+    <StartupObject></StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
     <MyType>WindowsForms</MyType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="ctlSettings.resx" />
-  </ItemGroup>
 
   <ItemGroup>
     <Import Include="System.Data" />
@@ -21,29 +17,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MauroTemplate\ApplicationSettings\ApplicationSettings.vbproj" />
-    <ProjectReference Include="..\ApplicationSettingsGUI\ApplicationSettingsGUI.vbproj" />
-    <ProjectReference Include="..\wp2DITA\wp2DITAGenerator.vbproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="ctlSettings.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="My Project\Application.Designer.vb">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
-    <Compile Update="wp2DITAGUI.Designer.vb">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>wp2DITAGUI.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="wp2DITAGUI.resx">
-      <CustomToolNamespace>My.Resources</CustomToolNamespace>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>wp2DITAGUI.Designer.vb</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

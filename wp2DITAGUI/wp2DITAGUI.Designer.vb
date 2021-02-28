@@ -65,12 +65,12 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to connection-string	StringSetting	Database connection		database connections string for the mySQL database hosting Wordpress
+        '''  Looks up a localized string similar to Heading1	Heading	Wordpress server		database connections string for the server 
+        '''connection-string	MultilineStringSetting	Database connection		database connections string for the mySQL database hosting Wordpress
         '''host	StringSetting	Database sever		DNS host name of the wordpress website
-        '''output-directory	FilePathSetting	Output Directory		local file directory to store the generated DITA files
-        '''topic-template	FilePathSetting	Topic template file		path to empty HTML page as a template
-        '''bookmap-template	FilePathSetting	Bookmap template file		path to empty DITA bookmap as a template
-        '''log-file	FilePathS [rest of string was truncated]&quot;;.
+        '''Heading2	Heading	File locations		Locations for key files
+        '''output-directory	FolderPathSetting	Output Directory		local file directory to store the generated DITA files
+        '''topic-template	FilePathSetting	Topic template file		path t [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property SettingsModel() As String
             Get
